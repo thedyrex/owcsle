@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+<img src="public\owcsle-white.png" alt="OWCSLE" width="400" />
+
+**A daily Overwatch esports guessing game - figure out the mystery OWCS pro from clues like team, role, and country.**
+
+[![Play Now](https://img.shields.io/badge/▶_Play_Now-owcsle.xyz-38bdf8?style=for-the-badge)](https://owcsle.xyz)
+[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com)
+
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
+![Cloudflare R2](https://img.shields.io/badge/Cloudflare_R2-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+
+</div>
+
+---
+
+## 🎮 How it works
+
+Every day there's a new mystery OWCS pro player. Type in guesses and get color-coded feedback on each attribute:
+
+| Clue | Feedback |
+|------|----------|
+| 🟩 Green | Exact match |
+| 🟨 Yellow | Close — same region, or age within range |
+| ⬛ Gray | No match |
+
+Solve it in as few guesses as you can, keep your streak alive, and climb the leaderboard.
+
+## ✨ Features
+
+- 🗓️ **Daily puzzle** — one new OWCS player every day, same for everyone
+- 🇺🇸 **USA board** — a second daily puzzle for the Overwatch World Cup 2026 USA roster
+- 🕹️ **Arcade mode** — unlimited play when one puzzle a day isn't enough
+- 📺 **OWTV integration** — featured articles and watch links, refreshed daily
+- 📊 **Stats & streaks** — win rate, guess distribution, and shareable result cards
+- 🏆 **Leaderboard & XP** — sign in via email, earn XP, level up
+- 🌗 **Light & dark mode** — plus mobile-friendly boards
+
+## 🛠️ Tech stack
+
+| Layer | Tech |
+|-------|------|
+| Framework | [Next.js](https://nextjs.org) (App Router) + TypeScript |
+| Styling | Tailwind CSS |
+| Auth & database | [Supabase](https://supabase.com) |
+| Asset storage | Cloudflare R2 + CDN |
+| Hosting & crons | [Vercel](https://vercel.com) |
+
+## 🚀 Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to play. You'll need a `.env` with Supabase, Twitch, and R2 credentials for full functionality.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ☕ Support
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+OWCSLE is a free fan project. If you enjoy it, consider [buying me a coffee on Ko-fi](https://ko-fi.com) 💙
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+<sub>Not affiliated with Blizzard Entertainment. Overwatch and OWCS are trademarks of Blizzard Entertainment, Inc.</sub>
+</div>
