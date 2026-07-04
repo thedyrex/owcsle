@@ -36,10 +36,8 @@ Solve it in as few guesses as you can, keep your streak alive, and climb the lea
 
 - 🗓️ **Daily puzzle** — one new OWCS player every day, same for everyone
 - 🕹️ **Arcade mode** — unlimited play when one puzzle a day isn't enough
-- 📺 **OWTV integration** — featured articles and watch links, refreshed daily
 - 📊 **Stats & streaks** — win rate, guess distribution, and shareable result cards
 - 🏆 **Leaderboard & XP** — sign in via email, earn XP, level up
-- 🌗 **Light & dark mode** — plus mobile-friendly boards
 
 ## 🛠️ Tech stack
 
