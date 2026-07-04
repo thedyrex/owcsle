@@ -27,7 +27,7 @@ Every day there's a new mystery OWCS pro player. Type in guesses and get color-c
 | Clue | Feedback |
 |------|----------|
 | 🟩 Green | Exact match |
-| 🟨 Yellow | Close — same region, or age within range |
+| 🟨 Yellow | Close - same region, or age within range |
 | ⬛ Gray | No match |
 
 Solve it in as few guesses as you can, keep your streak alive, and climb the leaderboard in the endless "Unlimited" mode.
