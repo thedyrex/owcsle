@@ -30,7 +30,7 @@ Every day there's a new mystery OWCS pro player. Type in guesses and get color-c
 | 🟨 Yellow | Close — same region, or age within range |
 | ⬛ Gray | No match |
 
-Solve it in as few guesses as you can, keep your streak alive, and climb the leaderboard.
+Solve it in as few guesses as you can, keep your streak alive, and climb the leaderboard in the endless "Unlimited" mode.
 
 ## ✨ Features
 
