@@ -62,7 +62,7 @@ Open [http://localhost:3000](http://localhost:3000) to play. You'll need a `.env
 
 ## ☕ Support
 
-OWCSLE is a free fan project. If you enjoy it, consider [buying me a coffee on Ko-fi](https://ko-fi.com) 💙
+OWCSLE is a free fan project. If you enjoy it, consider [buying me a coffee on Ko-fi](https://ko-fi.com/tannerlol) 💙
 
 ---
 
