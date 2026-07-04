@@ -1,0 +1,23 @@
+name: Scrape OWTV Daily
+
+on:
+  schedule:
+    # 7:05 AM UTC daily - 5 min after Vercel cron as redundancy
+    - cron: '5 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger OWTV scrape endpoint
+        run: |
+          STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.SITE_URL }}/api/cron/scrape-owtv")
+          echo "HTTP status: $STATUS"
+          cat /tmp/response.txt
+          if [ "$STATUS" != "200" ]; then
+            echo "Scrape failed"
+            exit 1
+          fi

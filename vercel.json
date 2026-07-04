@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/compress-stats",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-owtv",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

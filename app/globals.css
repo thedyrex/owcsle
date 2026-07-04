@@ -1,0 +1,237 @@
+@import "tailwindcss";
+
+@variant dark (.dark &);
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* View Transitions API - Right to left wipe */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+html[data-style="angled"]::view-transition-old(root) {
+  animation-name: wipe-out-right;
+  z-index: 1;
+}
+
+html[data-style="angled"]::view-transition-new(root) {
+  animation-name: wipe-in-right;
+  z-index: 2;
+}
+
+@keyframes wipe-out-right {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes wipe-in-right {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes dropdown-open {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-close {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes titleFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes expandOut {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes buttonFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rowFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-dropdown {
+  animation: dropdown-open 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
+}
+
+.animate-dropdown-close {
+  animation: dropdown-close 0.2s cubic-bezier(0.4, 0.0, 1, 1) forwards;
+  transform-origin: top right;
+  pointer-events: none;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.12s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.1s ease-in forwards;
+  pointer-events: none;
+}
+
+.animate-titleFadeIn {
+  animation: titleFadeIn 0.6s ease-out;
+}
+
+.animate-expandOut {
+  animation: expandOut 0.8s ease-out 0.3s both;
+  transform-origin: center;
+}
+
+.animate-buttonFadeIn {
+  animation: buttonFadeIn 0.5s ease-out 0.3s both;
+}
+
+.animate-inputFadeIn {
+  animation: buttonFadeIn 0.4s ease-out 1s both;
+}
+
+.animate-creditFadeIn {
+  animation: buttonFadeIn 0.4s ease-out 1.3s both;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-modalSlideIn {
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background-color: rgb(243 244 246);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    background-color: rgb(10 10 10);
+  }
+}
+
+html.dark {
+  background-color: rgb(10 10 10);
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(243 244 246);
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light *) {
+    background-color: rgb(10 10 10);
+  }
+}
+
+.dark body {
+  background-color: rgb(10 10 10);
+}
+
+button {
+  cursor: pointer;
+}
+
+.dotted-bg-light {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.15) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dotted-bg-light {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  }
+}
