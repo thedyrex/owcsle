@@ -6,7 +6,7 @@
 **A daily Overwatch esports guessing game - figure out the mystery OWCS pro from clues like team, role, and country.**
 
 [![Play Now](https://img.shields.io/badge/▶_Play_Now-owcsle.xyz-38bdf8?style=for-the-badge)](https://owcsle.xyz)
-[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com)
+[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/tannerlol)
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
