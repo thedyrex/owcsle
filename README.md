@@ -35,7 +35,6 @@ Solve it in as few guesses as you can, keep your streak alive, and climb the lea
 ## ✨ Features
 
 - 🗓️ **Daily puzzle** — one new OWCS player every day, same for everyone
-- 🇺🇸 **USA board** — a second daily puzzle for the Overwatch World Cup 2026 USA roster
 - 🕹️ **Arcade mode** — unlimited play when one puzzle a day isn't enough
 - 📺 **OWTV integration** — featured articles and watch links, refreshed daily
 - 📊 **Stats & streaks** — win rate, guess distribution, and shareable result cards
