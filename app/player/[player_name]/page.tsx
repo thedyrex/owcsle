@@ -16,17 +16,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const player = await findPlayerBySlug(decodeURIComponent(player_name));
   if (!player) return { title: 'Player not found · OWCSLE' };
 
-  const title = `Sign for ${player.player_name} · OWCSLE`;
-  const description = `Leave your signature for ${player.player_name} of ${player.team_name}.`;
   return {
-    title,
-    description,
-    // This page can carry a code in its URL, so it must never hand its own URL
-    // to anywhere else. Signing links shouldn't be indexed either.
+    // Title only, for the tab. Everything an unfurler could build a preview
+    // from is nulled rather than omitted: omitting inherits the root layout's
+    // tags, which would just swap this embed for the OWCSLE one.
+    title: `Sign for ${player.player_name} · OWCSLE`,
+    description: null,
+    openGraph: null,
+    twitter: null,
+    // A signing link carries a code and names a player. It should never hand
+    // its URL onward, be indexed, or unfurl into whatever channel it was
+    // pasted into.
     referrer: 'no-referrer',
     robots: { index: false, follow: false },
-    openGraph: { title, description },
-    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
