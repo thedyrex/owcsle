@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Search, Trash2, Download, PenLine } from "lucide-react";
+import { Search, Trash2, Download, PenLine, Link2, Check } from "lucide-react";
 import {
   AdminShell,
   Panel,
@@ -27,6 +27,8 @@ export default function SignaturesPage() {
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [query, setQuery] = useState("");
+  const [shareLink, setShareLink] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const fetchSignatures = async () => {
     try {
@@ -43,7 +45,22 @@ export default function SignaturesPage() {
 
   useEffect(() => {
     fetchSignatures();
+    fetch("/api/admin/signatures/share-link")
+      .then((r) => r.json())
+      .then((d) => setShareLink(d.url ?? null))
+      .catch(() => setShareLink(null));
   }, []);
+
+  const copyShareLink = async () => {
+    if (!shareLink) return;
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1400);
+    } catch {
+      prompt("Copy this view link:", shareLink);
+    }
+  };
 
   const deleteSignature = async (id: number) => {
     if (!confirm("Delete this signature? This removes it from R2 too.")) return;
@@ -77,6 +94,14 @@ export default function SignaturesPage() {
     <AdminShell
       title="Signatures"
       subtitle={`${signatures.length} collected across ${playerCount} player${playerCount === 1 ? "" : "s"}`}
+      actions={
+        shareLink ? (
+          <button onClick={copyShareLink} className="admin-btn" title={shareLink}>
+            {shareCopied ? <Check size={13} /> : <Link2 size={13} />}
+            {shareCopied ? "Copied" : "Copy view link"}
+          </button>
+        ) : undefined
+      }
     >
       <style>{`
         .sig-grid {
