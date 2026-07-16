@@ -9,6 +9,7 @@ import {
   Flag,
   Users,
   Shield,
+  PenLine,
   LogOut,
   ChevronLeft,
 } from "lucide-react";
@@ -48,6 +49,7 @@ const NAV = [
   { key: "usa-daily-pick", label: "USA Pick", path: "/admin/usa-daily-pick", icon: Flag },
   { key: "players", label: "Players", path: "/admin/players", icon: Users },
   { key: "teams", label: "Teams", path: "/admin/teams", icon: Shield },
+  { key: "signatures", label: "Signatures", path: "/admin/signatures", icon: PenLine },
 ];
 
 /* ---------------------------------- *

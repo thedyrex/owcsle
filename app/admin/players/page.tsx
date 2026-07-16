@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Search, Trash2, AlertTriangle, Users } from "lucide-react";
+import { Search, Trash2, AlertTriangle, Users, Copy, Check, RefreshCw, Link2 } from "lucide-react";
+import { formatCode, signingLink } from "@/lib/player-codes";
+import { slugifyPlayerName } from "@/lib/signatures";
 import { AdminShell, Panel, SectionLabel, ui, fontDisplay, fontLabel, fontMono } from "../components/AdminShell";
 
 const SUB_ROLES: Record<string, string[]> = {
@@ -33,6 +35,13 @@ export default function PlayersPage() {
   const [updatingRole, setUpdatingRole] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  // Signing codes, keyed by slug so a roster row that gets re-scraped with a
+  // new id still finds its code.
+  const [codes, setCodes] = useState<Record<string, string>>({});
+  const [copied, setCopied] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState<string | null>(null);
+  const [codesError, setCodesError] = useState<string | null>(null);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
   const fetchPlayers = async () => {
     try {
@@ -50,9 +59,73 @@ export default function PlayersPage() {
     }
   };
 
+  const fetchCodes = async () => {
+    try {
+      const res = await fetch("/api/admin/player-codes");
+      const data = await res.json();
+      if (!res.ok) {
+        // Without this the column just shows dashes and the reason is buried
+        // in a console 500 — say what's wrong where it's being looked at.
+        setCodesError(data.error || "Could not load signing codes");
+        return;
+      }
+      const next: Record<string, string> = {};
+      for (const row of data.codes ?? []) next[row.player_slug] = row.code;
+      setCodes(next);
+      setCodesError(null);
+    } catch {
+      setCodesError("Could not load signing codes");
+    }
+  };
+
   useEffect(() => {
     fetchPlayers();
+    fetchCodes();
   }, []);
+
+  const copyCode = async (slug: string, code: string) => {
+    try {
+      await navigator.clipboard.writeText(formatCode(code));
+      setCopied(slug);
+      setTimeout(() => setCopied((c) => (c === slug ? null : c)), 1400);
+    } catch {
+      alert(formatCode(code));
+    }
+  };
+
+  /* The link has to point at the live site, not at whatever host the admin
+   * happens to be on — a localhost link pasted to a player is useless. */
+  const copyLink = async (slug: string, code: string) => {
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const link = signingLink(origin, slug, code);
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedLink(slug);
+      setTimeout(() => setCopiedLink((c) => (c === slug ? null : c)), 1400);
+    } catch {
+      prompt("Copy this signing link:", link);
+    }
+  };
+
+  const regenerateCode = async (playerName: string) => {
+    const slug = slugifyPlayerName(playerName);
+    if (!confirm(`Replace ${playerName}'s code? The old one stops working immediately.`)) return;
+    setRegenerating(slug);
+    try {
+      const res = await fetch("/api/admin/player-codes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerName }),
+      });
+      const data = await res.json();
+      if (res.ok) setCodes((prev) => ({ ...prev, [slug]: data.code.code }));
+      else setCodesError(data.error || "Failed to regenerate code");
+    } catch {
+      alert("Failed to regenerate code");
+    } finally {
+      setRegenerating(null);
+    }
+  };
 
   const deletePlayer = async (playerId: number) => {
     if (!confirm("Are you sure you want to delete this player?")) return;
@@ -134,6 +207,12 @@ export default function PlayersPage() {
       {error && (
         <div className="admin-alert admin-alert--err" style={{ marginBottom: 16 }}>
           <AlertTriangle size={14} /> {error}
+        </div>
+      )}
+
+      {codesError && (
+        <div className="admin-alert admin-alert--err" style={{ marginBottom: 16 }}>
+          <AlertTriangle size={14} /> {codesError}
         </div>
       )}
 
@@ -220,6 +299,7 @@ export default function PlayersPage() {
                     <th style={{ textAlign: "left" }}>Role</th>
                     <th style={{ textAlign: "left" }}>Sub-Role</th>
                     <th style={{ textAlign: "left" }}>Region</th>
+                    <th style={{ textAlign: "left" }}>Signing Code</th>
                     <th style={{ textAlign: "right" }}>Actions</th>
                   </tr>
                 </thead>
@@ -246,7 +326,65 @@ export default function PlayersPage() {
                         </select>
                       </td>
                       <td>{player.region}</td>
-                      <td style={{ textAlign: "right" }}>
+                      <td>
+                        {codes[slugifyPlayerName(player.player_name)] ? (
+                          <button
+                            className="pl-code"
+                            onClick={() =>
+                              copyCode(
+                                slugifyPlayerName(player.player_name),
+                                codes[slugifyPlayerName(player.player_name)]
+                              )
+                            }
+                            title="Copy code"
+                          >
+                            {copied === slugifyPlayerName(player.player_name) ? (
+                              <>
+                                <Check size={11} /> Copied
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={11} />
+                                {formatCode(codes[slugifyPlayerName(player.player_name)])}
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <span style={{ color: ui.faint }}>—</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: "right", display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                        {codes[slugifyPlayerName(player.player_name)] && (
+                          <button
+                            onClick={() =>
+                              copyLink(
+                                slugifyPlayerName(player.player_name),
+                                codes[slugifyPlayerName(player.player_name)]
+                              )
+                            }
+                            className="pl-link"
+                            title="Copy a signing link with the code built in"
+                          >
+                            {copiedLink === slugifyPlayerName(player.player_name) ? (
+                              <>
+                                <Check size={11} /> Copied
+                              </>
+                            ) : (
+                              <>
+                                <Link2 size={11} /> Copy link
+                              </>
+                            )}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => regenerateCode(player.player_name)}
+                          disabled={regenerating === slugifyPlayerName(player.player_name)}
+                          className="pl-regen"
+                          title="Issue a new code"
+                        >
+                          <RefreshCw size={11} />
+                          {regenerating === slugifyPlayerName(player.player_name) ? "…" : "New code"}
+                        </button>
                         <button onClick={() => deletePlayer(player.id)} disabled={deleting === player.id} className="pl-del">
                           {deleting === player.id ? "…" : "Delete"}
                         </button>
@@ -255,7 +393,7 @@ export default function PlayersPage() {
                   ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", color: ui.faint, padding: "30px 0" }}>No players match</td>
+                      <td colSpan={8} style={{ textAlign: "center", color: ui.faint, padding: "30px 0" }}>No players match</td>
                     </tr>
                   )}
                 </tbody>
@@ -288,6 +426,17 @@ const css = `
   .pl-subrole { background: #0c0c0e; border: 1px solid ${ui.line}; border-radius: 4px; padding: 3px 6px; color: ${ui.text}; font-family: ${fontMono}; font-size: 11px; color-scheme: dark; outline: none; }
   .pl-subrole:focus { border-color: ${ui.orange}; }
   .pl-subrole:disabled { opacity: 0.5; }
+
+  .pl-code { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; font-family: ${fontMono}; font-size: 11.5px; letter-spacing: 0.06em; color: ${ui.text}; background: ${ui.raised}; border: 1px solid ${ui.line}; border-radius: 4px; cursor: pointer; transition: border-color 0.14s, color 0.14s; }
+  .pl-code:hover { border-color: ${ui.lineStrong}; color: ${ui.cyan}; }
+  .pl-code svg { color: ${ui.faint}; flex-shrink: 0; }
+
+  .pl-link { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; font-family: ${fontLabel}; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: ${ui.cyan}; background: transparent; border: 1px solid rgba(34,211,238,0.3); border-radius: 4px; cursor: pointer; transition: background 0.14s; white-space: nowrap; }
+  .pl-link:hover { background: rgba(34,211,238,0.12); }
+
+  .pl-regen { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; font-family: ${fontLabel}; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: ${ui.dim}; background: transparent; border: 1px solid ${ui.line}; border-radius: 4px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+  .pl-regen:hover:not(:disabled) { color: ${ui.text}; border-color: ${ui.lineStrong}; }
+  .pl-regen:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .pl-del { padding: 5px 11px; font-family: ${fontLabel}; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: ${ui.rose}; background: transparent; border: 1px solid rgba(251,113,133,0.3); border-radius: 4px; cursor: pointer; transition: background 0.14s; }
   .pl-del:hover:not(:disabled) { background: rgba(251,113,133,0.12); }
