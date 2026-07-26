@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Target, Flag, Users, Shield, LineChart, ArrowUpRight, Crown, type LucideIcon } from "lucide-react";
 import { AdminShell, Panel, SectionLabel, ui, fontDisplay, fontLabel, fontMono } from "../components/AdminShell";
-import { AreaChart, BarList, Donut, StatCard, nf } from "../components/charts";
+import { AreaChart, nf } from "../components/charts";
 import { OWCS_LIVE_COLOR, liveFor } from "../components/owcsSchedule";
 
 interface DayStat {
@@ -31,9 +31,6 @@ interface DailyPick {
   player?: PickPlayer | null;
 }
 
-const ROLE_COLORS: Record<string, string> = { tank: ui.cyan, dps: ui.orange, support: ui.green };
-const REGION_PALETTE = [ui.orange, ui.cyan, ui.violet, ui.green, ui.rose, "#fbbf24"];
-
 export default function AdminDashboard() {
   const router = useRouter();
   const [analytics, setAnalytics] = useState<DayStat[]>([]);
@@ -58,18 +55,8 @@ export default function AdminDashboard() {
     const labels = recent.map((d) => d.date.slice(5));
     const gamesSeries = recent.map((d) => d.totalGames);
     const winsSeries = recent.map((d) => d.totalWins);
-    const winRateSeries = recent.map((d) => (d.totalGames ? (d.totalWins / d.totalGames) * 100 : 0));
-    const avgGuessSeries = recent.map((d) => Number(d.avgGuesses) || 0);
 
     const teams = new Set(players.map((p) => p.team_name).filter(Boolean));
-    const roleCounts: Record<string, number> = {};
-    const regionCounts: Record<string, number> = {};
-    for (const p of players) {
-      const role = (p.role || "other").toLowerCase();
-      roleCounts[role] = (roleCounts[role] || 0) + 1;
-      const reg = p.region || "-";
-      regionCounts[reg] = (regionCounts[reg] || 0) + 1;
-    }
 
     return {
       hasData: days.length > 0,
@@ -82,16 +69,7 @@ export default function AdminDashboard() {
       live: liveFor(recent.map((d) => d.date)),
       gamesSeries,
       winsSeries,
-      winRateSeries,
-      avgGuessSeries,
       teamCount: teams.size,
-      roles: Object.entries(roleCounts)
-        .sort((a, b) => b[1] - a[1])
-        .map(([label, value]) => ({ label, value, color: ROLE_COLORS[label] || ui.violet })),
-      regions: Object.entries(regionCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
-        .map(([label, value], i) => ({ label, value, color: REGION_PALETTE[i % REGION_PALETTE.length] })),
     };
   }, [analytics, players]);
 
@@ -102,44 +80,19 @@ export default function AdminDashboard() {
     <AdminShell title="Dashboard" subtitle={today.toUpperCase()}>
       <style>{css}</style>
 
-      {/* KPI row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(196px, 1fr))", gap: 14 }}>
-        <StatCard
-          label="Games Tracked"
-          value={nf(m.totalGames)}
-          sub={`${m.activeDays} active ${m.activeDays === 1 ? "day" : "days"}`}
-          accent={ui.orange}
-          spark={m.gamesSeries}
-          delay={0}
-        />
-        <StatCard
-          label="Win Rate"
-          value={`${m.winRate.toFixed(1)}%`}
-          sub={`${nf(m.totalWins)} solved`}
-          accent={ui.green}
-          spark={m.winRateSeries}
-          delay={60}
-        />
-        <StatCard
-          label="Avg Guesses"
-          value={m.avgGuesses ? m.avgGuesses.toFixed(2) : "-"}
-          sub="per solve"
-          accent={ui.cyan}
-          spark={m.avgGuessSeries}
-          delay={120}
-        />
-        <StatCard
-          label="Player Pool"
-          value={nf(players.length)}
-          sub={`${m.teamCount} teams`}
-          accent={ui.violet}
-          delay={180}
-        />
+      {/* Slim summary line — plain figures, no cards */}
+      <div className="dash-stats">
+        <Stat label="Games" value={nf(m.totalGames)} />
+        <Stat label="Win Rate" value={`${m.winRate.toFixed(1)}%`} />
+        <Stat label="Avg Guesses" value={m.avgGuesses ? m.avgGuesses.toFixed(2) : "-"} />
+        <Stat label="Players" value={nf(players.length)} />
+        <Stat label="Teams" value={nf(m.teamCount)} />
+        <Stat label="Active Days" value={nf(m.activeDays)} />
       </div>
 
-      {/* chart + donut */}
-      <div className="dash-split" style={{ marginTop: 16 }}>
-        <Panel pad={20} brackets style={{ minHeight: 320 }}>
+      {/* Activity + today's pick */}
+      <div className="dash-split" style={{ marginTop: 20 }}>
+        <Panel pad={20} style={{ minHeight: 300 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
             <SectionLabel accent={ui.orange}>Activity · Last {m.labels.length} days</SectionLabel>
             <Legend />
@@ -153,39 +106,11 @@ export default function AdminDashboard() {
               ]}
               live={m.live}
               liveColor={OWCS_LIVE_COLOR}
-              height={236}
+              height={220}
             />
           ) : (
             <EmptyState />
           )}
-        </Panel>
-
-        <Panel pad={20} style={{ display: "flex", flexDirection: "column" }}>
-          <SectionLabel accent={ui.green}>Overall Win Rate</SectionLabel>
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 0" }}>
-            <Donut value={m.winRate / 100} color={ui.green} centerTop={`${m.winRate.toFixed(0)}%`} centerSub="solved" />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 14, borderTop: `1px solid ${ui.line}` }}>
-            <MiniStat label="Wins" value={nf(m.totalWins)} color={ui.green} />
-            <MiniStat label="Losses" value={nf(m.totalGames - m.totalWins)} color={ui.rose} />
-          </div>
-        </Panel>
-      </div>
-
-      {/* distributions + today's pick */}
-      <div className="dash-tri" style={{ marginTop: 16 }}>
-        <Panel pad={20}>
-          <SectionLabel accent={ui.cyan}>Roster · By Role</SectionLabel>
-          <div style={{ marginTop: 16 }}>
-            {m.roles.length ? <BarList items={m.roles} /> : <Muted>No players loaded</Muted>}
-          </div>
-        </Panel>
-
-        <Panel pad={20}>
-          <SectionLabel accent={ui.violet}>Roster · By Region</SectionLabel>
-          <div style={{ marginTop: 16 }}>
-            {m.regions.length ? <BarList items={m.regions} /> : <Muted>No players loaded</Muted>}
-          </div>
         </Panel>
 
         <Panel pad={20} style={{ display: "flex", flexDirection: "column" }}>
@@ -214,33 +139,38 @@ export default function AdminDashboard() {
         </Panel>
       </div>
 
-      {/* quick nav */}
+      {/* Lean nav */}
       <div style={{ marginTop: 26, marginBottom: 12 }}>
-        <SectionLabel>Control Modules</SectionLabel>
+        <SectionLabel>Manage</SectionLabel>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(212px, 1fr))", gap: 14 }}>
-        <NavCard icon={Target} title="Daily Pick" desc="Set the daily champion" path="/admin/daily-pick" accent={ui.orange} />
-        <NavCard icon={Flag} title="USA Pick" desc="USA mode selection" path="/admin/usa-daily-pick" accent={ui.rose} />
-        <NavCard icon={Users} title="Players" desc="Roster & duplicates" path="/admin/players" accent={ui.cyan} />
-        <NavCard icon={Shield} title="Teams" desc="Logos & colors" path="/admin/teams" accent={ui.violet} />
-        <NavCard icon={LineChart} title="Analytics" desc="Full statistics" path="/admin/analytics" accent="#fbbf24" />
+      <div className="dash-nav-list">
+        <NavRow icon={Target} title="Daily Pick" desc="Set the daily champion" path="/admin/daily-pick" />
+        <NavRow icon={Flag} title="USA Pick" desc="USA mode selection" path="/admin/usa-daily-pick" />
+        <NavRow icon={Users} title="Players" desc="Roster & duplicates" path="/admin/players" />
+        <NavRow icon={Shield} title="Teams" desc="Logos, colors & new teams" path="/admin/teams" />
+        <NavRow icon={LineChart} title="Analytics" desc="Full statistics & distributions" path="/admin/analytics" />
       </div>
     </AdminShell>
   );
 }
 
-function NavCard({ icon: Icon, title, desc, path, accent }: { icon: LucideIcon; title: string; desc: string; path: string; accent: string }) {
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="dash-stat">
+      <span style={{ fontFamily: fontMono, fontSize: 10, letterSpacing: "0.14em", color: ui.faint, textTransform: "uppercase" }}>{label}</span>
+      <span style={{ fontFamily: fontDisplay, fontSize: 26, lineHeight: 1, color: ui.text }}>{value}</span>
+    </div>
+  );
+}
+
+function NavRow({ icon: Icon, title, desc, path }: { icon: LucideIcon; title: string; desc: string; path: string }) {
   const router = useRouter();
   return (
-    <button onClick={() => router.push(path)} className="dash-nav-card" style={{ "--accent": accent } as React.CSSProperties}>
-      <div className="dash-nav-icon">
-        <Icon size={17} strokeWidth={2} />
-      </div>
-      <div style={{ flex: 1, textAlign: "left" }}>
-        <div style={{ fontFamily: fontLabel, fontSize: 13, letterSpacing: "0.06em", color: ui.text, textTransform: "uppercase" }}>{title}</div>
-        <div style={{ fontFamily: fontMono, fontSize: 10.5, color: ui.faint, marginTop: 4 }}>{desc}</div>
-      </div>
-      <ArrowUpRight size={15} className="dash-nav-arrow" />
+    <button onClick={() => router.push(path)} className="dash-nav-row">
+      <Icon size={16} strokeWidth={2} className="dash-nav-ic" />
+      <span style={{ fontFamily: fontLabel, fontSize: 13, letterSpacing: "0.05em", color: ui.text, textTransform: "uppercase" }}>{title}</span>
+      <span style={{ fontFamily: fontMono, fontSize: 11, color: ui.faint, flex: 1 }}>{desc}</span>
+      <ArrowUpRight size={14} className="dash-nav-arrow" />
     </button>
   );
 }
@@ -265,22 +195,13 @@ function Legend() {
   );
 }
 
-function MiniStat({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div>
-      <div style={{ fontFamily: fontMono, fontSize: 10, letterSpacing: "0.1em", color: ui.faint, textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontFamily: fontDisplay, fontSize: 19, color, marginTop: 4 }}>{value}</div>
-    </div>
-  );
-}
-
 function Muted({ children }: { children: React.ReactNode }) {
   return <div style={{ fontFamily: fontMono, fontSize: 12, color: ui.faint }}>{children}</div>;
 }
 
 function EmptyState() {
   return (
-    <div style={{ height: 236, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
+    <div style={{ height: 220, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
       <LineChart size={24} color={ui.faint} />
       <span style={{ fontFamily: fontMono, fontSize: 12, color: ui.faint }}>No game data recorded yet</span>
     </div>
@@ -288,27 +209,27 @@ function EmptyState() {
 }
 
 const css = `
-  .dash-split { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  .dash-tri { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  @media (min-width: 880px) {
-    .dash-split { grid-template-columns: 2fr 1fr; }
-    .dash-tri { grid-template-columns: 1fr 1fr 1fr; }
+  .dash-stats {
+    display: flex; flex-wrap: wrap; gap: 12px 40px;
+    padding: 18px 22px; background: ${ui.panel}; border: 1px solid ${ui.line}; border-radius: 6px;
   }
+  .dash-stat { display: flex; flex-direction: column; gap: 8px; }
 
-  .dash-nav-card {
-    display: flex; align-items: center; gap: 14px; text-align: left;
-    padding: 16px; background: ${ui.panel}; border: 1px solid ${ui.line}; border-radius: 6px;
-    cursor: pointer; transition: border-color 0.18s, transform 0.18s, background 0.18s;
+  .dash-split { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 880px) { .dash-split { grid-template-columns: 2fr 1fr; } }
+
+  .dash-nav-list { display: flex; flex-direction: column; border: 1px solid ${ui.line}; border-radius: 6px; overflow: hidden; }
+  .dash-nav-row {
+    display: flex; align-items: center; gap: 14px; text-align: left; width: 100%;
+    padding: 15px 18px; background: ${ui.panel}; border: none; border-bottom: 1px solid ${ui.lineSoft};
+    cursor: pointer; transition: background 0.15s;
   }
-  .dash-nav-card:hover { border-color: var(--accent); transform: translateY(-2px); background: ${ui.panel2}; }
-  .dash-nav-icon {
-    width: 40px; height: 40px; border-radius: 7px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: color-mix(in srgb, var(--accent) 14%, transparent);
-    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  }
-  .dash-nav-arrow { color: ${ui.faint}; transition: color 0.18s, transform 0.18s; }
-  .dash-nav-card:hover .dash-nav-arrow { color: var(--accent); transform: translate(2px,-2px); }
+  .dash-nav-list .dash-nav-row:last-child { border-bottom: none; }
+  .dash-nav-row:hover { background: ${ui.panel2}; }
+  .dash-nav-ic { color: ${ui.dim}; flex-shrink: 0; }
+  .dash-nav-row:hover .dash-nav-ic { color: ${ui.orange}; }
+  .dash-nav-arrow { color: ${ui.faint}; transition: color 0.15s, transform 0.15s; flex-shrink: 0; }
+  .dash-nav-row:hover .dash-nav-arrow { color: ${ui.orange}; transform: translate(2px,-2px); }
 
   .dash-pick-btn {
     margin-top: 14px; width: 100%; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 7px;

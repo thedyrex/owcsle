@@ -28,8 +28,6 @@ import { getDayNumber } from "@/app/utils/getCSTDateString";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
-const FACEIT_SIGNUP_URL = "https://www.faceit.com/en/subscriptions/ow2/faceit-league/free?affiliateCode=OWCSLE";
-
 export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -427,31 +425,11 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
       )}
       </div>
 
-      {/* FACEIT promo banner */}
-      <button
-        onClick={() => window.open(FACEIT_SIGNUP_URL, '_blank', 'noopener,noreferrer')}
-        onContextMenu={(e) => e.preventDefault()}
-        className="hidden sm:block animate-creditFadeIn w-full max-w-lg rounded-lg shadow-lg overflow-hidden cursor-pointer"
-      >
-        <video
-          src="https://cdn.owcsle.xyz/faceitpromo.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="block w-full brightness-100 hover:brightness-75 transition-[filter] duration-200"
-        />
-      </button>
-
-
       {/* Credit */}
       <div className="flex flex-col items-center gap-3 relative z-0 animate-creditFadeIn">
         <p className="text-base text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] flex items-center gap-1">
           MADE BY <a href="https://x.com/dyrexreal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">DYREX</a> <img src="/mewo.png" alt="mewo" className="w-6 h-6 dark:invert" />
         </p>
-        <a href="https://ko-fi.com/tannerlol" target="_blank" rel="noopener noreferrer" className="-mt-2 text-[15px] uppercase underline underline-offset-2 text-neutral-400 dark:text-neutral-500 hover:text-orange-500 dark:hover:text-orange-500 transition-colors font-[family-name:var(--font-ow-esports)]">
-          Support me on Ko-fi
-        </a>
       </div>
 
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { RefreshCw, X, Pencil, Upload, ImagePlus, Check, Info } from "lucide-react";
+import { RefreshCw, X, Pencil, Upload, ImagePlus, Check, Info, Plus } from "lucide-react";
 import { AdminShell, Panel, SectionLabel, ui, fontDisplay, fontLabel, fontMono } from "../components/AdminShell";
 
 interface Team {
@@ -23,6 +23,10 @@ export default function ManageTeams() {
   const [pickerTeamId, setPickerTeamId] = useState<number | null>(null);
   const [existingLogos, setExistingLogos] = useState<string[]>([]);
   const [erroredLogos, setErroredLogos] = useState<Set<number>>(new Set());
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newColor, setNewColor] = useState("#f97316");
+  const [creating, setCreating] = useState(false);
 
   async function loadTeams() {
     try {
@@ -37,6 +41,34 @@ export default function ManageTeams() {
   useEffect(() => {
     loadTeams().finally(() => setLoading(false));
   }, []);
+
+  async function handleCreateTeam() {
+    const name = newName.trim();
+    if (!name) return;
+    setCreating(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/teams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ team_name: name, team_color: newColor }),
+      });
+      if (response.ok) {
+        setMessage(`Team "${name}" created. Upload a logo to finish setting it up.`);
+        setNewName("");
+        setNewColor("#f97316");
+        setAdding(false);
+        await loadTeams();
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.error || "Failed to create team");
+      }
+    } catch {
+      setMessage("Failed to create team");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function handleUpdateTeam() {
     if (!editingTeam) return;
@@ -152,9 +184,14 @@ export default function ManageTeams() {
       title="Teams"
       subtitle={`${teams.length} TEAMS`}
       actions={
-        <button onClick={handleSyncTeamColors} disabled={syncingColors} className="admin-btn admin-btn--primary" title="Sync colors & logos to rosters">
-          <RefreshCw size={13} className={syncingColors ? "tm-spin" : ""} /> Sync
-        </button>
+        <>
+          <button onClick={() => { setAdding((v) => !v); setMessage(""); }} className="admin-btn" title="Add a new team">
+            <Plus size={13} /> Add Team
+          </button>
+          <button onClick={handleSyncTeamColors} disabled={syncingColors} className="admin-btn admin-btn--primary" title="Sync colors & logos to rosters">
+            <RefreshCw size={13} className={syncingColors ? "tm-spin" : ""} /> Sync
+          </button>
+        </>
       }
     >
       <style>{css}</style>
@@ -163,6 +200,39 @@ export default function ManageTeams() {
         <div className="admin-alert" style={{ marginBottom: 16, color: ui.cyan, background: "rgba(34,211,238,0.07)", border: "1px solid rgba(34,211,238,0.25)" }}>
           <Info size={14} /> {message}
         </div>
+      )}
+
+      {adding && (
+        <Panel style={{ marginBottom: 16 }}>
+          <SectionLabel accent={ui.orange}>New Team</SectionLabel>
+          <div className="tm-add-row">
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <label className="admin-label">Team Name</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleCreateTeam(); }}
+                placeholder="e.g. Team Falcons"
+                className="admin-input"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="admin-label">Color</label>
+              <input type="color" value={newColor} onChange={(e) => setNewColor(e.target.value)} className="tm-color" style={{ width: 52, height: 42 }} />
+            </div>
+            <button onClick={handleCreateTeam} disabled={creating || !newName.trim()} className="admin-btn admin-btn--primary" style={{ alignSelf: "flex-end", height: 42 }}>
+              <Check size={13} /> {creating ? "Creating…" : "Create"}
+            </button>
+            <button onClick={() => { setAdding(false); setNewName(""); }} className="admin-btn" style={{ alignSelf: "flex-end", height: 42 }}>
+              Cancel
+            </button>
+          </div>
+          <p style={{ fontFamily: fontMono, fontSize: 11, color: ui.faint, margin: "12px 0 0" }}>
+            Creates an empty team. Add its logo and roster afterward from the table below / Players.
+          </p>
+        </Panel>
       )}
 
       {loading ? (
@@ -291,6 +361,8 @@ const css = `
   .tm-table tbody tr:hover { background: ${ui.panel2}; }
 
   .tm-color { width: 42px; height: 28px; padding: 0; background: transparent; border: 1px solid ${ui.line}; border-radius: 4px; cursor: pointer; }
+
+  .tm-add-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-top: 16px; }
 
   .tm-btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 11px; font-family: ${fontLabel}; font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: ${ui.text}; background: ${ui.raised}; border: 1px solid ${ui.line}; border-radius: 4px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
   .tm-btn:hover { border-color: ${ui.lineStrong}; }

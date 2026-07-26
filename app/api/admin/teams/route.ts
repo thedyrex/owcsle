@@ -57,3 +57,50 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    // Verify admin authentication
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin-token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await jwtVerify(token, SECRET);
+
+    const body = await request.json();
+    const team_name = (body.team_name || "").trim();
+    const team_color = body.team_color || null;
+
+    if (!team_name) {
+      return NextResponse.json({ error: "Team name is required" }, { status: 400 });
+    }
+
+    // Reject duplicates (case-insensitive)
+    const { data: existing } = await supabase
+      .from("teams")
+      .select("id")
+      .ilike("team_name", team_name)
+      .maybeSingle();
+
+    if (existing) {
+      return NextResponse.json({ error: "A team with that name already exists" }, { status: 409 });
+    }
+
+    const { data: team, error } = await supabase
+      .from("teams")
+      .insert({ team_name, team_color })
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, team });
+  } catch (error) {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
