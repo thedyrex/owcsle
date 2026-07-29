@@ -79,31 +79,31 @@ export function TeamLogoCollage() {
             return (
               <div
                 key={i}
-                className="relative"
+                className="p-1.5 sm:p-3"
                 style={{
-                  aspectRatio: "1 / 1",
                   transform: `rotate(${rot.toFixed(2)}deg)`,
                   opacity: op,
                 }}
               >
-                {/* Absolutely-positioned inner layer so the image has a definite
-                    box to size against. The image fills it with w/h-full +
-                    object-contain rather than max-height:100%, which mobile
-                    Safari fails to resolve on a flex child and then falls back
-                    to the logo's intrinsic size, blowing large logos up huge. */}
-                <div className="absolute inset-0 p-1.5 sm:p-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    draggable={false}
-                    className={`w-full h-full object-contain drop-shadow-sm${
-                      invertInLight(url) ? " invert dark:invert-0" : ""
-                    }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
-                  />
-                </div>
+                {/* The image is the square: aspect-ratio + width:100% derives its
+                    height from its own (definite) grid-track width, and
+                    object-contain letterboxes the logo inside. This never relies
+                    on a parent height resolving — which iOS WebKit (Safari AND
+                    iOS Chrome) fails to propagate from an aspect-ratio cell,
+                    falling back to the logo's intrinsic size and blowing tall
+                    logos up huge. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                  className={`block w-full object-contain drop-shadow-sm${
+                    invertInLight(url) ? " invert dark:invert-0" : ""
+                  }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
+                  style={{ aspectRatio: "1 / 1" }}
+                />
               </div>
             );
           })}
