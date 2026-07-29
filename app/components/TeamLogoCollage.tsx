@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Team = { id: string | number; team_name: string; team_logo: string };
 
@@ -12,9 +12,7 @@ function seeded(n: number) {
 
 export function TeamLogoCollage() {
   const [logos, setLogos] = useState<string[]>([]);
-  const [dims, setDims] = useState({ w: 0, h: 0 });
   const [visible, setVisible] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,25 +31,6 @@ export function TeamLogoCollage() {
     };
   }, []);
 
-  // Measure the collage element itself (not `window`) so the grid matches the
-  // real rendered viewport on every device. window.innerWidth/Height lie on
-  // mobile (visual vs layout viewport, collapsing address bar, DPR) — which is
-  // why it looked right only in Chrome's device emulator.
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver((entries) => {
-      for (const e of entries) {
-        setDims({
-          w: Math.round(e.contentRect.width),
-          h: Math.round(e.contentRect.height),
-        });
-      }
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [logos]);
-
   // Fade the collage in last — after the page's own intro animations settle.
   useEffect(() => {
     if (logos.length === 0) return;
@@ -69,52 +48,40 @@ export function TeamLogoCollage() {
 
   if (logos.length === 0) return null;
 
-  // Uniform grid sized to fill the viewport. A known column count lets us
-  // place each tile so it never repeats its left or top neighbour. Layout is
-  // deferred until the element has been measured (dims.w > 0).
-  const ready = dims.w > 0;
-  const cell = dims.w < 640 ? 60 : 120;
-  const cols = ready ? Math.max(1, Math.floor(dims.w / cell)) : 0;
-  const rows = ready ? Math.ceil(dims.h / cell) + 2 : 0;
-
-  const grid: string[] = [];
-  for (let idx = 0; idx < cols * rows; idx++) {
-    const c = idx % cols;
-    const r = Math.floor(idx / cols);
-    const left = c > 0 ? grid[idx - 1] : null;
-    const top = r > 0 ? grid[idx - cols] : null;
-    const candidates = logos.filter((l) => l !== left && l !== top);
-    const pick = candidates[Math.floor(seeded(idx * 1.7 + 3.3) * candidates.length)];
-    grid.push(pick ?? logos[idx % logos.length]);
+  // Column sizing is handled by CSS (auto-fill + a media-query breakpoint) so it
+  // always matches the real device — no JS viewport measurement, which lies on
+  // mobile. To keep identical logos from ever touching we build one long
+  // sequence where no logo repeats within WINDOW tiles: the grid flows
+  // row-major, so horizontal neighbours are 1 apart and vertical neighbours are
+  // `columns` apart — both guaranteed distinct for any column count <= WINDOW.
+  const WINDOW = Math.min(20, logos.length - 1);
+  const COUNT = 320; // enough tiles to fill any realistic viewport; overflow is clipped
+  const tiles: string[] = [];
+  for (let i = 0; i < COUNT; i++) {
+    const recent = new Set(tiles.slice(Math.max(0, i - WINDOW)));
+    const candidates = logos.filter((l) => !recent.has(l));
+    const pick = candidates[Math.floor(seeded(i * 1.7 + 3.3) * candidates.length)];
+    tiles.push(pick ?? logos[i % logos.length]);
   }
 
   return (
     <div
-      ref={rootRef}
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
-      style={{ opacity: visible && ready ? 1 : 0, transition: "opacity 900ms ease-out" }}
+      style={{ opacity: visible ? 1 : 0, transition: "opacity 900ms ease-out" }}
     >
       {/* Collage layer */}
       <div className="absolute inset-0 opacity-[0.16] dark:opacity-[0.14]">
-        {ready && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            width: "100%",
-          }}
-        >
-          {grid.map((url, i) => {
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(58px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(112px,1fr))]">
+          {tiles.map((url, i) => {
             const rot = (seeded(i * 3.1) - 0.5) * 16; // -8deg..8deg
             const op = 0.65 + seeded(i * 7.7) * 0.35; // 0.65..1
             return (
               <div
                 key={i}
-                className="flex items-center justify-center"
+                className="flex items-center justify-center p-1.5 sm:p-3"
                 style={{
                   aspectRatio: "1 / 1",
-                  padding: dims.w < 640 ? 6 : 12,
                   transform: `rotate(${rot.toFixed(2)}deg)`,
                   opacity: op,
                 }}
@@ -134,7 +101,6 @@ export function TeamLogoCollage() {
             );
           })}
         </div>
-        )}
       </div>
 
       {/* Readability overlay: fade toward the centre where the game board sits,
