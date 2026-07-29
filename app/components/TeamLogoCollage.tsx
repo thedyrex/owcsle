@@ -79,24 +79,31 @@ export function TeamLogoCollage() {
             return (
               <div
                 key={i}
-                className="flex items-center justify-center p-1.5 sm:p-3"
+                className="relative"
                 style={{
                   aspectRatio: "1 / 1",
                   transform: `rotate(${rot.toFixed(2)}deg)`,
                   opacity: op,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={url}
-                  alt=""
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                  className={`max-w-full max-h-full object-contain drop-shadow-sm${
-                    invertInLight(url) ? " invert dark:invert-0" : ""
-                  }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
-                />
+                {/* Absolutely-positioned inner layer so the image has a definite
+                    height to size against. Sizing the image with max-height:100%
+                    directly against an aspect-ratio cell fails to resolve on
+                    mobile Safari, which then falls back to the logo's intrinsic
+                    height and blows tall logos up huge. */}
+                <div className="absolute inset-0 flex items-center justify-center p-1.5 sm:p-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                    className={`max-w-full max-h-full object-contain drop-shadow-sm${
+                      invertInLight(url) ? " invert dark:invert-0" : ""
+                    }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
+                  />
+                </div>
               </div>
             );
           })}
