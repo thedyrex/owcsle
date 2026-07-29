@@ -15,6 +15,7 @@ import { LeaderboardModal } from "./components/LeaderboardModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { OWTVModal } from "./components/OWTVModal";
 import { LiveBadge } from "./components/LiveBadge";
+import { TeamLogoCollage } from "./components/TeamLogoCollage";
 import { MessageCircle, User, CheckCircle2, XCircle, BarChart3, HelpCircle, Infinity as InfinityIcon, Home as HomeIcon, Crown, Settings } from "lucide-react";
 import { useAuth } from "./components/AuthProvider";
 import { useGame } from "@/hooks/useGame";
@@ -247,6 +248,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden flex flex-col items-center justify-start gap-6 bg-gray-100 dark:bg-neutral-950 text-neutral-800 dark:text-white pt-16 pb-8 px-2 animate-fadeIn select-none" style={{ transition: 'opacity 300ms ease-out', opacity: fadingOut ? 0 : 1 }}>
+      <TeamLogoCollage />
       <div className="relative flex flex-col items-center animate-titleFadeIn w-full max-w-lg">
         {showOWTVBanner && (
           <button onClick={() => setShowOWTVModal(true)} className={`absolute hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md hover:opacity-80 transition-opacity cursor-pointer ${isArcade ? '-top-1' : 'top-1'}`} style={{ background: dark ? '#1c1c1c' : '#fff', left: '-15px', boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}>

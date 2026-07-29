@@ -220,6 +220,29 @@ body {
   background-color: rgb(10 10 10);
 }
 
+/* Team-logo collage background fade (matches page background colour). */
+:root {
+  --collage-fade-strong: rgba(243, 244, 246, 0.92);
+  --collage-fade-soft: rgba(243, 244, 246, 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    --collage-fade-strong: rgba(10, 10, 10, 0.92);
+    --collage-fade-soft: rgba(10, 10, 10, 0.55);
+  }
+}
+
+html.dark {
+  --collage-fade-strong: rgba(10, 10, 10, 0.92);
+  --collage-fade-soft: rgba(10, 10, 10, 0.55);
+}
+
+html.light {
+  --collage-fade-strong: rgba(243, 244, 246, 0.92);
+  --collage-fade-soft: rgba(243, 244, 246, 0.55);
+}
+
 button {
   cursor: pointer;
 }
