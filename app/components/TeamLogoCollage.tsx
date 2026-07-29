@@ -30,9 +30,13 @@ export function TeamLogoCollage() {
     };
   }, []);
 
-  // Logos that are near-black and get lost on the dark background — invert them.
-  const INVERT_MATCH = ["logo-3635e20b", "lunex-gaming", "ZAN_Esports_darkmode"];
-  const shouldInvert = (url: string) => INVERT_MATCH.some((m) => url.includes(m));
+  // Light logos that vanish on the white background — invert only in light mode.
+  const INVERT_LIGHT_MATCH = ["logo-3635e20b", "lunex-gaming", "ZAN_Esports_darkmode"];
+  const invertInLight = (url: string) => INVERT_LIGHT_MATCH.some((m) => url.includes(m));
+
+  // Dark logos that vanish on the dark background — invert only in dark mode.
+  const INVERT_DARK_MATCH = ["logo-b20d251b"]; // ZETA DIVISION
+  const invertInDark = (url: string) => INVERT_DARK_MATCH.some((m) => url.includes(m));
 
   if (logos.length === 0) return null;
 
@@ -73,8 +77,8 @@ export function TeamLogoCollage() {
                   decoding="async"
                   draggable={false}
                   className={`w-full h-auto max-h-24 object-contain drop-shadow-sm${
-                    shouldInvert(url) ? " invert dark:invert-0" : ""
-                  }`}
+                    invertInLight(url) ? " invert dark:invert-0" : ""
+                  }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
                 />
               </div>
             );
