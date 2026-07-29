@@ -87,11 +87,11 @@ export function TeamLogoCollage() {
                 }}
               >
                 {/* Absolutely-positioned inner layer so the image has a definite
-                    height to size against. Sizing the image with max-height:100%
-                    directly against an aspect-ratio cell fails to resolve on
-                    mobile Safari, which then falls back to the logo's intrinsic
-                    height and blows tall logos up huge. */}
-                <div className="absolute inset-0 flex items-center justify-center p-1.5 sm:p-3">
+                    box to size against. The image fills it with w/h-full +
+                    object-contain rather than max-height:100%, which mobile
+                    Safari fails to resolve on a flex child and then falls back
+                    to the logo's intrinsic size, blowing large logos up huge. */}
+                <div className="absolute inset-0 p-1.5 sm:p-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
@@ -99,7 +99,7 @@ export function TeamLogoCollage() {
                     loading="lazy"
                     decoding="async"
                     draggable={false}
-                    className={`max-w-full max-h-full object-contain drop-shadow-sm${
+                    className={`w-full h-full object-contain drop-shadow-sm${
                       invertInLight(url) ? " invert dark:invert-0" : ""
                     }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
                   />
