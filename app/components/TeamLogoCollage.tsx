@@ -12,6 +12,8 @@ function seeded(n: number) {
 
 export function TeamLogoCollage() {
   const [logos, setLogos] = useState<string[]>([]);
+  const [dims, setDims] = useState({ w: 0, h: 0 });
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,6 +32,21 @@ export function TeamLogoCollage() {
     };
   }, []);
 
+  // Track viewport so the grid can be laid out with a known column count.
+  useEffect(() => {
+    const update = () => setDims({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  // Fade the collage in last — after the page's own intro animations settle.
+  useEffect(() => {
+    if (logos.length === 0) return;
+    const t = setTimeout(() => setVisible(true), 1400);
+    return () => clearTimeout(t);
+  }, [logos]);
+
   // Light logos that vanish on the white background — invert only in light mode.
   const INVERT_LIGHT_MATCH = ["logo-3635e20b", "lunex-gaming", "ZAN_Esports_darkmode"];
   const invertInLight = (url: string) => INVERT_LIGHT_MATCH.some((m) => url.includes(m));
@@ -38,36 +55,53 @@ export function TeamLogoCollage() {
   const INVERT_DARK_MATCH = ["logo-b20d251b"]; // ZETA DIVISION
   const invertInDark = (url: string) => INVERT_DARK_MATCH.some((m) => url.includes(m));
 
-  if (logos.length === 0) return null;
+  if (logos.length === 0 || dims.w === 0) return null;
 
-  // Repeat the logo set enough times to comfortably fill large viewports,
-  // shuffling the order per pass so repeats aren't obviously adjacent.
-  const PASSES = 8;
-  const tiles: string[] = [];
-  for (let p = 0; p < PASSES; p++) {
-    const order = logos
-      .map((url, i) => ({ url, k: seeded(i + p * 97) }))
-      .sort((a, b) => a.k - b.k)
-      .map((o) => o.url);
-    tiles.push(...order);
+  // Uniform grid sized to fill the viewport. A known column count lets us
+  // place each tile so it never repeats its left or top neighbour.
+  const cell = dims.w < 640 ? 60 : 120;
+  const cols = Math.max(1, Math.floor(dims.w / cell));
+  const rows = Math.ceil(dims.h / cell) + 2;
+
+  const grid: string[] = [];
+  for (let idx = 0; idx < cols * rows; idx++) {
+    const c = idx % cols;
+    const r = Math.floor(idx / cols);
+    const left = c > 0 ? grid[idx - 1] : null;
+    const top = r > 0 ? grid[idx - cols] : null;
+    const candidates = logos.filter((l) => l !== left && l !== top);
+    const pick = candidates[Math.floor(seeded(idx * 1.7 + 3.3) * candidates.length)];
+    grid.push(pick ?? logos[idx % logos.length]);
   }
 
   return (
     <div
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
+      style={{ opacity: visible ? 1 : 0, transition: "opacity 900ms ease-out" }}
     >
       {/* Collage layer */}
       <div className="absolute inset-0 opacity-[0.16] dark:opacity-[0.14]">
-        <div className="columns-[92px] sm:columns-[120px] gap-3 sm:gap-4 px-2 [column-fill:balance]">
-          {tiles.map((url, i) => {
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${cols}, 1fr)`,
+            width: "100%",
+          }}
+        >
+          {grid.map((url, i) => {
             const rot = (seeded(i * 3.1) - 0.5) * 16; // -8deg..8deg
             const op = 0.65 + seeded(i * 7.7) * 0.35; // 0.65..1
             return (
               <div
                 key={i}
-                className="mb-3 sm:mb-4 break-inside-avoid flex items-center justify-center"
-                style={{ transform: `rotate(${rot.toFixed(2)}deg)`, opacity: op }}
+                className="flex items-center justify-center"
+                style={{
+                  aspectRatio: "1 / 1",
+                  padding: dims.w < 640 ? 6 : 12,
+                  transform: `rotate(${rot.toFixed(2)}deg)`,
+                  opacity: op,
+                }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -76,7 +110,7 @@ export function TeamLogoCollage() {
                   loading="lazy"
                   decoding="async"
                   draggable={false}
-                  className={`w-full h-auto max-h-24 object-contain drop-shadow-sm${
+                  className={`max-w-full max-h-full object-contain drop-shadow-sm${
                     invertInLight(url) ? " invert dark:invert-0" : ""
                   }${invertInDark(url) ? " invert-0 dark:invert" : ""}`}
                 />
