@@ -256,11 +256,21 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
         )}
         <div>
           <h1 className="text-4xl sm:text-3xl md:text-4xl lg:text-4xl font-bold font-[family-name:var(--font-poster-gothic)]">
-            <span className="text-orange-500">OWCS</span>LE
+            <span
+              style={{
+                backgroundImage: 'linear-gradient(to bottom, #37D4C5 0%, #6FDC9A 50%, #BEE23F 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              OWCS
+            </span>
+            LE
           </h1>
         </div>
-        <p className="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
-          {isArcade ? 'UNLIMITED' : 'STAGE 2'}
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
+          {isArcade ? 'UNLIMITED' : 'MIDSEASON CHAMPIONSHIP'}
         </p>
         {dailyCount !== null && !isArcade && (
           <p className="text-xs text-neutral-400 dark:text-neutral-500 font-[family-name:var(--font-poster-gothic)] mt-0.5">
