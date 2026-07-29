@@ -3,7 +3,7 @@
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
-import { Settings } from 'lucide-react';
+import { Settings, Sun, Moon, Monitor } from 'lucide-react';
 import { ColorblindMode } from '@/hooks/useSettings';
 
 interface Props {
@@ -17,12 +17,21 @@ interface Props {
 
 
 export function SettingsModal({ open, onClose, colorblindMode, onColorblindChange, reduceMotion, onReduceMotionChange }: Props) {
-  const { resolvedTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const dark = resolvedTheme === 'dark';
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
+
+  function switchTheme(next: string) {
+    if ((document as any).startViewTransition && next !== theme) {
+      document.documentElement.dataset.style = 'angled';
+      (document as any).startViewTransition(() => setTheme(next));
+    } else {
+      setTheme(next);
+    }
+  }
 
   function handleClose() {
     setClosing(true);
@@ -89,6 +98,37 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
 
         {/* Body */}
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+
+          {/* Theme row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px', background: rowBg, borderRadius: '4px',
+            border: `1px solid ${divider}`,
+          }}>
+            <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>THEME</div>
+            <div style={{ display: 'flex', gap: '4px', background: dark ? '#0d0d0d' : '#dcdcdc', padding: '3px', borderRadius: '6px' }}>
+              {[
+                { key: 'light', Icon: Sun },
+                { key: 'dark', Icon: Moon },
+                { key: 'system', Icon: Monitor },
+              ].map(({ key, Icon }) => (
+                <button
+                  key={key}
+                  aria-label={key}
+                  onClick={() => switchTheme(key)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '30px', height: '26px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+                    background: theme === key ? '#f97316' : 'transparent',
+                    color: theme === key ? '#fff' : subtext,
+                    transition: 'background 0.15s, color 0.15s',
+                  }}
+                >
+                  <Icon style={{ width: '15px', height: '15px' }} />
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Toggle row */}
           <div style={{

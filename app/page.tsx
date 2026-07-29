@@ -16,6 +16,7 @@ import { SettingsModal } from "./components/SettingsModal";
 import { OWTVModal } from "./components/OWTVModal";
 import { LiveBadge } from "./components/LiveBadge";
 import { TeamLogoCollage } from "./components/TeamLogoCollage";
+import { MobileMenu } from "./components/MobileMenu";
 import { MessageCircle, User, CheckCircle2, XCircle, BarChart3, HelpCircle, Infinity as InfinityIcon, Home as HomeIcon, Crown, Settings } from "lucide-react";
 import { useAuth } from "./components/AuthProvider";
 import { useGame } from "@/hooks/useGame";
@@ -288,17 +289,20 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
         )}
       </div>
 
-      {/* Mobile icon row */}
-      <div className="flex sm:hidden items-center gap-1 animate-buttonFadeIn -my-3 z-[100]">
-        <IconButton icon={HelpCircle} label="How to play" onClick={() => setShowHowToPlayModal(true)} />
-        {!isArcade && <IconButton icon={BarChart3} label="Statistics" onClick={() => setShowStatsModal(true)} />}
-        <IconButton icon={isArcade ? HomeIcon : InfinityIcon} label={isArcade ? 'Daily' : 'Unlimited'} onClick={toggleArcade} />
-        {isArcade && <IconButton icon={Crown} label="Leaderboard" onClick={() => setShowLeaderboard(true)} />}
-        <ImageIconButton src="https://cdn.owcsle.xyz/images/usa_logo.png" label="USA OWWC" imgClassName="dark:invert" onClick={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }} />
-        <IconButton icon={MessageCircle} label="Feedback" onClick={() => setShowFeedbackModal(true)} />
-        <ThemeToggle />
-        <IconButton icon={Settings} label="Settings" onClick={() => setShowSettings(true)} />
-        <UserMenu user={user} onLoginClick={() => setShowAuthModal(true)} />
+      {/* Mobile corner menu */}
+      <div className="fixed top-3 right-3 sm:hidden animate-buttonFadeIn z-[110]">
+        <MobileMenu
+          isArcade={isArcade}
+          user={user}
+          onHowToPlay={() => setShowHowToPlayModal(true)}
+          onStats={() => setShowStatsModal(true)}
+          onLeaderboard={() => setShowLeaderboard(true)}
+          onToggleArcade={toggleArcade}
+          onUsa={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }}
+          onFeedback={() => setShowFeedbackModal(true)}
+          onSettings={() => setShowSettings(true)}
+          onLoginClick={() => setShowAuthModal(true)}
+        />
       </div>
 
       <div className="w-4/5 sm:w-full max-w-lg h-px bg-neutral-300 dark:bg-neutral-700 animate-expandOut"></div>
