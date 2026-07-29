@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Team = { id: string | number; team_name: string; team_logo: string };
 
@@ -14,6 +14,7 @@ export function TeamLogoCollage() {
   const [logos, setLogos] = useState<string[]>([]);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const [visible, setVisible] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,13 +33,24 @@ export function TeamLogoCollage() {
     };
   }, []);
 
-  // Track viewport so the grid can be laid out with a known column count.
+  // Measure the collage element itself (not `window`) so the grid matches the
+  // real rendered viewport on every device. window.innerWidth/Height lie on
+  // mobile (visual vs layout viewport, collapsing address bar, DPR) — which is
+  // why it looked right only in Chrome's device emulator.
   useEffect(() => {
-    const update = () => setDims({ w: window.innerWidth, h: window.innerHeight });
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
+    const el = rootRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) {
+        setDims({
+          w: Math.round(e.contentRect.width),
+          h: Math.round(e.contentRect.height),
+        });
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [logos]);
 
   // Fade the collage in last — after the page's own intro animations settle.
   useEffect(() => {
@@ -55,13 +67,15 @@ export function TeamLogoCollage() {
   const INVERT_DARK_MATCH = ["logo-b20d251b"]; // ZETA DIVISION
   const invertInDark = (url: string) => INVERT_DARK_MATCH.some((m) => url.includes(m));
 
-  if (logos.length === 0 || dims.w === 0) return null;
+  if (logos.length === 0) return null;
 
   // Uniform grid sized to fill the viewport. A known column count lets us
-  // place each tile so it never repeats its left or top neighbour.
+  // place each tile so it never repeats its left or top neighbour. Layout is
+  // deferred until the element has been measured (dims.w > 0).
+  const ready = dims.w > 0;
   const cell = dims.w < 640 ? 60 : 120;
-  const cols = Math.max(1, Math.floor(dims.w / cell));
-  const rows = Math.ceil(dims.h / cell) + 2;
+  const cols = ready ? Math.max(1, Math.floor(dims.w / cell)) : 0;
+  const rows = ready ? Math.ceil(dims.h / cell) + 2 : 0;
 
   const grid: string[] = [];
   for (let idx = 0; idx < cols * rows; idx++) {
@@ -76,12 +90,14 @@ export function TeamLogoCollage() {
 
   return (
     <div
+      ref={rootRef}
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
-      style={{ opacity: visible ? 1 : 0, transition: "opacity 900ms ease-out" }}
+      style={{ opacity: visible && ready ? 1 : 0, transition: "opacity 900ms ease-out" }}
     >
       {/* Collage layer */}
       <div className="absolute inset-0 opacity-[0.16] dark:opacity-[0.14]">
+        {ready && (
         <div
           style={{
             display: "grid",
@@ -118,6 +134,7 @@ export function TeamLogoCollage() {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Readability overlay: fade toward the centre where the game board sits,
