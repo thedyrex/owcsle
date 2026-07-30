@@ -332,7 +332,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
 
         {!isArcade && !isLoading && (
           <div className="flex flex-col items-center gap-6">
-            <div className="w-[calc(100vw-24px)] max-w-md sm:w-auto">
+            <div className="w-[calc(100vw-24px)] max-w-md sm:w-auto sm:max-w-none">
               <GameBoard guesses={guesses} maxGuesses={maxGuesses} targetPlayerId={targetPlayer?.id || null} colorblindMode={settings.colorblindMode} />
             </div>
 

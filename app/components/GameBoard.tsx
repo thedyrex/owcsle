@@ -104,7 +104,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Region Cell */}
               <div
                 data-cell
-                className={`relative group w-10 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center text-sm sm:text-base md:text-lg font-bold transition-colors ${
+                className={`relative group w-11 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center text-sm sm:text-base md:text-lg font-bold transition-colors ${
                   guess
                     ? `${getColorClass(guess.feedback.region)} text-white`
                     : 'bg-white dark:bg-neutral-800'
@@ -128,7 +128,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Nationality Cell */}
               <div
                 data-cell
-                className={`relative group w-10 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
+                className={`relative group w-11 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
                   guess
                     ? getColorClass(guess.feedback.nationality)
                     : 'bg-white dark:bg-neutral-800'
@@ -157,7 +157,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Role Cell */}
               <div
                 data-cell
-                className={`relative group w-10 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
+                className={`relative group w-11 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
                   guess
                     ? getColorClass(guess.feedback.role)
                     : 'bg-white dark:bg-neutral-800'
@@ -186,7 +186,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Role Type Cell */}
               <div
                 data-cell
-                className={`relative group w-10 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center text-sm sm:text-base md:text-lg font-bold transition-colors ${
+                className={`relative group w-11 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center text-sm sm:text-base md:text-lg font-bold transition-colors ${
                   guess
                     ? `${getColorClass(guess.feedback.role_type)} text-white`
                     : 'bg-white dark:bg-neutral-800'
@@ -210,7 +210,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Team Cell */}
               <div
                 data-cell
-                className={`relative group w-10 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
+                className={`relative group w-11 sm:w-12 md:w-16 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center transition-colors ${
                   guess
                     ? getColorClass(guess.feedback.team)
                     : 'bg-white dark:bg-neutral-800'
