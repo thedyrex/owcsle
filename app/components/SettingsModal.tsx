@@ -24,13 +24,11 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Switch instantly (no view-transition wipe): the modal's backdrop blur has
+  // nothing to blur against the transition snapshot, so the wipe would make the
+  // blur visibly drop out for its duration.
   function switchTheme(next: string) {
-    if ((document as any).startViewTransition && next !== theme) {
-      document.documentElement.dataset.style = 'angled';
-      (document as any).startViewTransition(() => setTheme(next));
-    } else {
-      setTheme(next);
-    }
+    setTheme(next);
   }
 
   function handleClose() {

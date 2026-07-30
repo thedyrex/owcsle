@@ -63,14 +63,14 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
           onClick={handleDismiss}
         />
       )}
-      <div className="grid grid-rows-6 gap-1 sm:gap-1.5 relative z-50">
+      <div className="grid grid-rows-6 gap-1 sm:gap-1.5 relative z-50 w-full sm:w-auto">
         {Array.from({ length: maxGuesses }).map((_, rowIndex) => {
           const guess = guesses[rowIndex];
 
           return (
             <div
               key={rowIndex}
-              className="flex gap-1 sm:gap-1.5"
+              className="flex gap-1 sm:gap-1.5 w-full sm:w-auto"
               style={{
                 animation: `rowFadeIn 0.4s ease-out ${rowIndex * 0.08}s both`
               }}
@@ -78,7 +78,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
               {/* Player Name Cell */}
               <div
                 data-cell
-                className={`relative group w-30 sm:w-40 md:w-48 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center px-2 text-sm sm:text-base md:text-lg font-bold transition-colors ${
+                className={`relative group flex-1 min-w-0 sm:flex-none sm:w-40 md:w-48 h-11 sm:h-12 md:h-16 rounded shadow flex items-center justify-center px-2 text-sm sm:text-base md:text-lg font-bold transition-colors ${
                   guess
                     ? guess.player.id === targetPlayerId
                       ? `${colorblindMode && colorblindMode !== 'none' ? 'bg-blue-500' : 'bg-green-400'} text-white`
