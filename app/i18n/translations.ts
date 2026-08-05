@@ -83,6 +83,9 @@ const en: Dict = {
   'howto.coloursExplain.bold': 'Sub-role',
   'howto.coloursExplain.post': ' can turn yellow - same role (Tank / DPS / Support), different specialty. Everything else is match or miss.',
   'howto.teams': 'Teams',
+  'howto.credits.title': 'Credits',
+  'howto.credits.pre': 'Huge thanks to ',
+  'howto.credits.post': ' for assisting with miscellaneous work, and Mrala for the CN translation.',
 
   // Settings modal
   'settings.title': 'SETTINGS',
@@ -301,6 +304,9 @@ const zh: Dict = {
   'howto.coloursExplain.bold': '准确职责',
   'howto.coloursExplain.post': '会显示黄色 (重装 / 输出 / 辅助), 不同具体的职责。其余的选项只有匹配或者错误。',
   'howto.teams': '队伍',
+  'howto.credits.title': '鸣谢',
+  'howto.credits.pre': '非常感谢 ',
+  'howto.credits.post': ' 协助完成各项杂务，以及 Mrala 提供的中文翻译。',
 
   // Settings modal
   'settings.title': '设置',

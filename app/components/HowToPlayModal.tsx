@@ -169,6 +169,8 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
             {t('howto.objective')}
           </p>
 
+          <div style={{ height: '1px', background: divider, flexShrink: 0 }} />
+
           {/* Worked example */}
           <div>
             <span style={eyebrow}>{t('howto.readingGuess')}</span>
@@ -205,6 +207,8 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
             </p>
           </div>
 
+          <div style={{ height: '1px', background: divider, flexShrink: 0 }} />
+
           {/* Colours */}
           <div>
             <span style={eyebrow}>{t('howto.coloursTitle')}</span>
@@ -224,6 +228,8 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
               {t('howto.coloursExplain.pre')}<b style={{ color: text }}>{t('howto.coloursExplain.bold')}</b>{t('howto.coloursExplain.post')}
             </p>
           </div>
+
+          <div style={{ height: '1px', background: divider, flexShrink: 0 }} />
 
           {/* Teams */}
           <div>
@@ -271,6 +277,18 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
                 );
               })}
             </div>
+          </div>
+
+          <div style={{ height: '1px', background: divider, flexShrink: 0 }} />
+
+          {/* Credits */}
+          <div>
+            <span style={eyebrow}>{t('howto.credits.title')}</span>
+            <p style={{ fontFamily: 'var(--font-poster-gothic), sans-serif', fontSize: '13px', color: muted, lineHeight: 1.6, margin: 0 }}>
+              {t('howto.credits.pre')}
+              <a href="https://x.com/udonmarii" target="_blank" rel="noopener noreferrer" style={{ color: '#f97316', textDecoration: 'none' }}>Mari</a>
+              {t('howto.credits.post')}
+            </p>
           </div>
 
           <div style={{ paddingBottom: '4px' }} />
