@@ -19,6 +19,7 @@ import { TeamLogoCollage } from "./components/TeamLogoCollage";
 import { MobileMenu } from "./components/MobileMenu";
 import { MessageCircle, User, CheckCircle2, XCircle, BarChart3, HelpCircle, Infinity as InfinityIcon, Home as HomeIcon, Crown, Settings } from "lucide-react";
 import { useAuth } from "./components/AuthProvider";
+import { useT } from "./components/LanguageProvider";
 import { useGame } from "@/hooks/useGame";
 import { useSettings } from "@/hooks/useSettings";
 import useLocalGameStorage, { getGameKeys } from "@/hooks/useLocalGameStorage";
@@ -47,6 +48,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
     }
   };
 
+  const t = useT();
   const { settings, update: updateSettings } = useSettings();
   const { guesses, maxGuesses, gameWon, gameOver, isLoading, error, makeGuess, allPlayers, targetPlayer, restoreGameState } = useGame();
   const { todayKey, todayGameStateKey } = getGameKeys();
@@ -253,7 +255,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
       <div className="relative flex flex-col items-center animate-titleFadeIn w-full max-w-lg">
         {showOWTVBanner && (
           <button onClick={() => setShowOWTVModal(true)} className={`absolute hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md hover:opacity-80 transition-opacity cursor-pointer ${isArcade ? '-top-1' : 'top-1'}`} style={{ background: dark ? '#1c1c1c' : '#fff', left: '-15px', boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}>
-            <span className="font-[family-name:var(--font-ow-esports)] text-[10px] font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em', color: dark ? '#a0aec0' : '#151C23' }}>PARTNERED WITH</span>
+            <span className="font-[family-name:var(--font-ow-esports)] text-[10px] font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em', color: dark ? '#a0aec0' : '#151C23' }}>{t('page.partneredWith')}</span>
             <img src={dark ? '/LOGO_NAME_WHITE_BLUE.png' : '/OWTV_LOGO_darkblue.png'} alt="Partner logo" className="h-4 object-contain" />
           </button>
         )}
@@ -273,17 +275,17 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
           </h1>
         </div>
         <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
-          {isArcade ? 'UNLIMITED' : 'MIDSEASON CHAMPIONSHIP'}
+          {isArcade ? t('page.subtitle.unlimited') : t('page.subtitle.midseason')}
         </p>
         {dailyCount !== null && !isArcade && (
           <p className="text-xs text-neutral-400 dark:text-neutral-500 font-[family-name:var(--font-poster-gothic)] mt-0.5">
-            {dailyCount} GAMES PLAYED TODAY
+            {t('page.gamesPlayedToday', { count: dailyCount })}
           </p>
         )}
         <LiveBadge isArcade={isArcade} />
         {showOWTVBanner && (
           <button onClick={() => setShowOWTVModal(true)} className={`flex sm:hidden items-center gap-2 px-3 py-1.5 rounded-md hover:opacity-80 transition-opacity cursor-pointer ${isArcade ? 'mt-0.5' : 'mt-1.5'}`} style={{ background: dark ? '#1c1c1c' : '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.15)' }}>
-            <span className="font-[family-name:var(--font-ow-esports)] text-[10px] font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em', color: dark ? '#a0aec0' : '#151C23' }}>PARTNERED WITH</span>
+            <span className="font-[family-name:var(--font-ow-esports)] text-[10px] font-bold whitespace-nowrap" style={{ letterSpacing: '0.05em', color: dark ? '#a0aec0' : '#151C23' }}>{t('page.partneredWith')}</span>
             <img src={dark ? '/LOGO_NAME_WHITE_BLUE.png' : '/OWTV_LOGO_darkblue.png'} alt="Partner logo" className="h-4 object-contain" />
           </button>
         )}
@@ -315,16 +317,16 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
 
       <div className="relative z-50 sm:min-w-[520px]">
         <div className="hidden sm:flex absolute -top-20 left-0 items-center gap-2 animate-buttonFadeIn z-[100]">
-          <IconButton icon={HelpCircle} label="How to play" onClick={() => setShowHowToPlayModal(true)} />
-          {!isArcade && <IconButton icon={BarChart3} label="Statistics" onClick={() => setShowStatsModal(true)} />}
-          {isArcade && <IconButton icon={Crown} label="Leaderboard" onClick={() => setShowLeaderboard(true)} />}
-          <IconButton icon={isArcade ? HomeIcon : InfinityIcon} label={isArcade ? 'Daily' : 'Unlimited'} onClick={toggleArcade} />
-          <ImageIconButton src="https://cdn.owcsle.xyz/images/usa_logo.png" label="USA OWWC" imgClassName="dark:invert" onClick={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }} />
+          <IconButton icon={HelpCircle} label={t('nav.howToPlay')} onClick={() => setShowHowToPlayModal(true)} />
+          {!isArcade && <IconButton icon={BarChart3} label={t('nav.statistics')} onClick={() => setShowStatsModal(true)} />}
+          {isArcade && <IconButton icon={Crown} label={t('nav.leaderboard')} onClick={() => setShowLeaderboard(true)} />}
+          <IconButton icon={isArcade ? HomeIcon : InfinityIcon} label={isArcade ? t('nav.daily') : t('nav.unlimited')} onClick={toggleArcade} />
+          <ImageIconButton src="https://cdn.owcsle.xyz/images/usa_logo.png" label={t('nav.usa')} imgClassName="dark:invert" onClick={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }} />
         </div>
         <div className="hidden sm:flex absolute -top-20 right-0 items-center gap-2 animate-buttonFadeIn z-[100]">
-          <IconButton icon={MessageCircle} label="Feedback" onClick={() => setShowFeedbackModal(true)} />
+          <IconButton icon={MessageCircle} label={t('nav.feedback')} onClick={() => setShowFeedbackModal(true)} />
           <ThemeToggle />
-          <IconButton icon={Settings} label="Settings" onClick={() => setShowSettings(true)} />
+          <IconButton icon={Settings} label={t('nav.settings')} onClick={() => setShowSettings(true)} />
           <UserMenu user={user} onLoginClick={() => setShowAuthModal(true)} />
         </div>
 
@@ -341,9 +343,9 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
               <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-6 py-3 rounded-lg flex flex-col items-center gap-1 font-bold font-[family-name:var(--font-ow-esports)]">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5" />
-                  <span>Congratulations! You won in {guesses.length} guesses!</span>
+                  <span>{t('page.won', { count: guesses.length })}</span>
                 </div>
-                <span className="text-sm font-normal">OWCSLE resets in {timeUntilReset}</span>
+                <span className="text-sm font-normal">{t('page.resetIn', { time: timeUntilReset })}</span>
               </div>
 
               <GameResultCard
@@ -359,9 +361,9 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
               <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-6 py-3 rounded-lg flex flex-col items-center gap-1 font-bold font-[family-name:var(--font-ow-esports)]">
                 <div className="flex items-center gap-2">
                   <XCircle className="w-5 h-5" />
-                  <span>You lost! The answer was {targetPlayer?.player_name}</span>
+                  <span>{t('page.lost', { name: targetPlayer?.player_name ?? '' })}</span>
                 </div>
-                <span className="text-sm font-normal">OWCSLE resets in {timeUntilReset}</span>
+                <span className="text-sm font-normal">{t('page.resetIn', { time: timeUntilReset })}</span>
               </div>
 
               <GameResultCard
@@ -382,7 +384,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
                       ref={inputRef}
                       type="text"
                       autoComplete="off"
-                      placeholder="TYPE OR SELECT PLAYER..."
+                      placeholder={t('page.inputPlaceholder')}
                       value={inputValue}
                       onChange={(e) => {
                         setInputValue(e.target.value);
@@ -422,7 +424,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
                         ))
                       ) : (
                         <div className="px-3 py-1.5 text-sm text-neutral-500 dark:text-neutral-400 italic select-none">
-                          No players found
+                          {t('page.noPlayers')}
                         </div>
                       )}
                     </div>
@@ -434,7 +436,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
                   style={{ backgroundImage: 'linear-gradient(to bottom, #37D4C5 0%, #6FDC9A 50%, #BEE23F 100%)' }}
                   className="px-3 py-2 sm:px-5 sm:py-2.5 text-white text-sm sm:text-base font-bold rounded-lg transition-[filter] hover:brightness-95 font-[family-name:var(--font-poster-gothic)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  GUESS
+                  {t('page.guess')}
                 </button>
               </div>
             </div>
@@ -447,7 +449,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
       {/* Credit */}
       <div className="flex flex-col items-center gap-3 relative z-0 animate-creditFadeIn">
         <p className="text-base text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] flex items-center gap-1">
-          MADE BY <a href="https://x.com/dyrexreal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">DYREX</a> <img src="/mewo.png" alt="mewo" className="w-6 h-6 dark:invert" />
+          {t('page.madeByPrefix')} <a href="https://x.com/dyrexreal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">DYREX</a>{t('page.madeBySuffix') ? ` ${t('page.madeBySuffix')}` : ''} <img src="/mewo.png" alt="mewo" className="w-6 h-6 dark:invert" />
         </p>
       </div>
 

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
 import { Crown } from 'lucide-react';
+import { useT } from './LanguageProvider';
 
 function formatMs(ms: number) {
   const totalSec = Math.floor(ms / 1000);
@@ -36,6 +37,7 @@ interface Props {
 const RANK_COLORS = ['#fbbf24', '#94a3b8', '#b45309'];
 
 export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
+  const t = useT();
   const { resolvedTheme } = useTheme();
   const dark = resolvedTheme === 'dark';
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -135,7 +137,7 @@ export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Crown style={{ width: '14px', height: '14px', color: '#a855f7' }} />
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#a855f7', letterSpacing: '0.05em' }}>
-              OWCSLE UNLIMITED LEADERBOARD
+              {t('lb.title')}
             </span>
           </div>
           <button onClick={handleClose} style={{
@@ -155,8 +157,8 @@ export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
           flexShrink: 0,
           background: dark ? '#0d0d0d' : '#dcdcdc',
         }}>
-          {(['#', 'PLAYER', 'LEVEL', 'WINS', 'AVG TIME'] as const).map((h, i) => (
-            <div key={h} className={i === 4 ? 'lb-col-avgtime' : ''} style={{ display: 'flex', justifyContent: i === 0 ? 'flex-start' : i === 1 ? 'flex-start' : 'center', paddingLeft: i === 0 ? '12px' : 0 }}>
+          {['#', t('lb.col.player'), t('lb.col.level'), t('lb.col.wins'), t('lb.col.avgTime')].map((h, i) => (
+            <div key={i} className={i === 4 ? 'lb-col-avgtime' : ''} style={{ display: 'flex', justifyContent: i === 0 ? 'flex-start' : i === 1 ? 'flex-start' : 'center', paddingLeft: i === 0 ? '12px' : 0 }}>
               <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext, letterSpacing: '0.08em' }}>{h}</span>
             </div>
           ))}
@@ -166,11 +168,11 @@ export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
         <div style={{ overflowY: 'auto', flex: 1 }}>
           {loading ? (
             <div style={{ padding: '56px', textAlign: 'center', fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: subtext }}>
-              LOADING...
+              {t('lb.loading')}
             </div>
           ) : entries.length === 0 ? (
             <div style={{ padding: '56px', textAlign: 'center', fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: subtext }}>
-              NO PLAYERS YET. BE THE FIRST!
+              {t('lb.empty')}
             </div>
           ) : entries.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((entry, i) => {
             const globalI = page * PAGE_SIZE + i;
@@ -325,7 +327,7 @@ export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
               background: 'none', border: 'none', cursor: page === 0 ? 'default' : 'pointer',
               color: page === 0 ? (dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)') : '#a855f7',
               padding: '4px 8px',
-            }}>← PREV</button>
+            }}>{t('lb.prev')}</button>
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: dark ? 'rgba(255,255,255,0.38)' : 'rgba(0,0,0,0.38)' }}>
               {page + 1} / {Math.ceil(entries.length / PAGE_SIZE)}
             </span>
@@ -334,7 +336,7 @@ export function LeaderboardModal({ open, onClose, currentUserId }: Props) {
               background: 'none', border: 'none', cursor: (page + 1) * PAGE_SIZE >= entries.length ? 'default' : 'pointer',
               color: (page + 1) * PAGE_SIZE >= entries.length ? (dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)') : '#a855f7',
               padding: '4px 8px',
-            }}>NEXT →</button>
+            }}>{t('lb.next')}</button>
           </div>
         )}
 

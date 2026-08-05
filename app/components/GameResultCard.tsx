@@ -2,6 +2,7 @@
 
 import { GuessResult } from '@/lib/supabase';
 import { useEffect, useRef, useState } from 'react';
+import { useT } from './LanguageProvider';
 
 interface GameResultCardProps {
   guesses: GuessResult[];
@@ -20,6 +21,7 @@ export function GameResultCard({
   wordleNumber,
   userAvatar
 }: GameResultCardProps) {
+  const t = useT();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [copied, setCopied] = useState(false);
 
@@ -148,7 +150,7 @@ export function GameResultCard({
           await navigator.share({
             files: [file],
             title: `OWCSLE #${wordleNumber}`,
-            text: `I ${won ? 'got' : 'missed'} OWCSLE #${wordleNumber}! ${won ? `${guesses.length}/${maxGuesses}` : 'X/6'}`
+            text: t(won ? 'result.shareGot' : 'result.shareMissed', { n: wordleNumber, score: won ? `${guesses.length}/${maxGuesses}` : 'X/6' })
           });
         } catch (err) {
           downloadImage();
@@ -227,14 +229,14 @@ export function GameResultCard({
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
-          {copied ? 'COPIED!' : 'COPY RESULTS'}
+          {copied ? t('result.copied') : t('result.copy')}
         </button>
         <button
           onClick={postToX}
           className="w-full max-w-sm px-6 py-3 bg-black hover:bg-neutral-800 text-white rounded-lg font-bold transition-colors text-base flex items-center justify-center gap-2 font-[family-name:var(--font-ow-esports)] "
         >
           <img src="/images/xlogo.png" alt="X" className="w-4 h-4 invert" />
-          POST TO X
+          {t('result.postX')}
         </button>
       </div>
     </>

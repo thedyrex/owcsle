@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes'
 import type { User } from '@supabase/supabase-js'
 import { xpProgress, xpForLevel } from '@/lib/xp'
 import { useStats } from '@/hooks/useStats'
+import { useT } from './LanguageProvider'
 
 const TITLE_PRESETS: { title: string; req: number }[] = [
   { title: "Tenis",                req: 10 },
@@ -348,6 +349,7 @@ function AdminPanel({ supabase, dark, subtext, divider, inputBg, inputBorder, se
 }
 
 export function UserMenu({ user, onLoginClick }: UserMenuProps) {
+  const t = useT()
   const { resolvedTheme } = useTheme()
   const dark = resolvedTheme === 'dark'
   const [open, setOpen] = useState(false)
@@ -516,16 +518,16 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
     setEmailState('loading'); setEmailMsg('')
     const { error } = await supabase.auth.updateUser({ email: emailVal.trim() })
     if (error) { setEmailState('error'); setEmailMsg(error.message) }
-    else { setEmailState('success'); setEmailMsg('Confirmation email sent.'); setEditingEmail(false); setTimeout(() => { setEmailState('idle'); setEmailMsg('') }, 4000) }
+    else { setEmailState('success'); setEmailMsg(t('um.confirmationEmailSent')); setEditingEmail(false); setTimeout(() => { setEmailState('idle'); setEmailMsg('') }, 4000) }
   }
 
   async function savePassword() {
     if (!pwVal) return
-    if (pwVal !== pwConfirmVal) { setPwState('error'); setPwMsg('Passwords do not match.'); return }
+    if (pwVal !== pwConfirmVal) { setPwState('error'); setPwMsg(t('auth.err.passwordMismatch')); return }
     setPwState('loading'); setPwMsg('')
     const { error } = await supabase.auth.updateUser({ password: pwVal })
     if (error) { setPwState('error'); setPwMsg(error.message) }
-    else { setPwState('success'); setPwMsg('Password updated!'); setPwVal(''); setPwConfirmVal(''); setShowPassword(false); setTimeout(() => { setPwState('idle'); setPwMsg('') }, 2000) }
+    else { setPwState('success'); setPwMsg(t('um.passwordUpdated')); setPwVal(''); setPwConfirmVal(''); setShowPassword(false); setTimeout(() => { setPwState('idle'); setPwMsg('') }, 2000) }
   }
 
   const bg = dark ? '#1a1a1a' : '#f4f4f4'
@@ -552,17 +554,17 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
   const isAdmin = user?.email === 'curdtanner@gmail.com'
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'progression', label: 'STATS', icon: <TrendingUp style={{ width: '13px', height: '13px' }} /> },
-    { key: 'customize',   label: 'CUSTOMIZE',   icon: <Palette    style={{ width: '13px', height: '13px' }} /> },
-    { key: 'editinfo',    label: 'EDIT INFO',    icon: <UserIcon   style={{ width: '13px', height: '13px' }} /> },
-    ...(isAdmin ? [{ key: 'admin' as Tab, label: 'ADMIN', icon: <ShieldAlert style={{ width: '13px', height: '13px' }} /> }] : []),
+    { key: 'progression', label: t('um.tab.stats'), icon: <TrendingUp style={{ width: '13px', height: '13px' }} /> },
+    { key: 'customize',   label: t('um.tab.customize'),   icon: <Palette    style={{ width: '13px', height: '13px' }} /> },
+    { key: 'editinfo',    label: t('um.tab.editInfo'),    icon: <UserIcon   style={{ width: '13px', height: '13px' }} /> },
+    ...(isAdmin ? [{ key: 'admin' as Tab, label: t('um.tab.admin'), icon: <ShieldAlert style={{ width: '13px', height: '13px' }} /> }] : []),
   ]
 
   return (
     <>
       <button
         onClick={handleButtonClick}
-        title={user ? username : 'Profile'}
+        title={user ? username : t('nav.profile')}
         suppressHydrationWarning
         className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
         style={{ border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', color: user ? '#f97316' : undefined }}
@@ -621,7 +623,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               borderBottom: '2px solid #f97316',
             }}>
-              <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#f97316' }}>PROFILE</span>
+              <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#f97316' }}>{t('um.profile')}</span>
               <button onClick={handleClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer',
                 color: text, opacity: 0.35, fontSize: '18px', lineHeight: 1,
@@ -685,7 +687,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                   onMouseLeave={e => { e.currentTarget.style.color = subtext; e.currentTarget.style.background = 'none' }}
                 >
                   <LogOut style={{ width: '13px', height: '13px' }} />
-                  LOGOUT
+                  {t('um.logout')}
                 </button>
               </div>
 
@@ -702,35 +704,35 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                       {/* Unlimited Level / XP */}
                       <div>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>OWCSLE UNLIMITED LEVEL</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.unlimitedLevel')}</span>
                         <div style={{ marginTop: '12px', background: inputBg, border: `1px solid ${divider}`, borderRadius: '4px', padding: '16px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
-                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '22px', color: '#f97316' }}>LVL {xp.level}</span>
+                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '22px', color: '#f97316' }}>{t('um.lvl', { level: xp.level })}</span>
                             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext }}>{xp.current} / {xp.required} XP</span>
                           </div>
                           <div style={{ height: '6px', borderRadius: '3px', background: divider, overflow: 'hidden' }}>
                             <div style={{ height: '100%', borderRadius: '3px', background: '#f97316', width: `${xp.percent * 100}%`, transition: 'width 0.6s ease' }} />
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
-                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext }}>TOTAL XP: {arcadeXp}</span>
-                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext }}>NEXT: {xpForLevel(xp.level) - xp.current} XP</span>
+                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext }}>{t('um.totalXp', { xp: arcadeXp })}</span>
+                            <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext }}>{t('um.next', { xp: xpForLevel(xp.level) - xp.current })}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Unlimited stats */}
                       <div>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>UNLIMITED STATS</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.unlimitedStats')}</span>
                         <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                           {(() => {
                             const arcadeStats = (() => { try { return JSON.parse(localStorage.getItem('owcsle_arcade_stats') || '{}') } catch { return {} } })();
                             const avgMs = user?.user_metadata?.avg_time_ms ?? null;
                             const formatAvg = (ms: number) => { const s = Math.floor(ms / 1000); const cs = Math.floor((ms % 1000) / 10); return `${s}.${cs.toString().padStart(2, '0')}s`; };
                             return [
-                              { label: 'GAMES WON', value: user?.user_metadata?.games_won ?? 0 },
-                              { label: 'STREAK', value: arcadeStats.streak ?? 0 },
-                              { label: 'BEST STREAK', value: arcadeStats.bestStreak ?? 0 },
-                              { label: 'AVG TIME', value: avgMs != null ? formatAvg(avgMs) : '\u2014' },
+                              { label: t('um.gamesWon'), value: user?.user_metadata?.games_won ?? 0 },
+                              { label: t('um.streak'), value: arcadeStats.streak ?? 0 },
+                              { label: t('um.bestStreak'), value: arcadeStats.bestStreak ?? 0 },
+                              { label: t('um.avgTime'), value: avgMs != null ? formatAvg(avgMs) : '\u2014' },
                             ].map(({ label, value }) => (
                               <div key={label} style={{ background: inputBg, border: `1px solid ${divider}`, borderRadius: '4px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '8px', color: subtext }}>{label}</span>
@@ -743,13 +745,13 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                       {/* Daily stats */}
                       <div>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>DAILY STATS</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.dailyStats')}</span>
                         <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                           {[
-                            { label: 'PLAYED', value: dailyStats.gamesPlayed },
-                            { label: 'WIN RATE', value: `${dailyWinRate}%` },
-                            { label: 'STREAK', value: dailyStats.currentStreak },
-                            { label: 'BEST STREAK', value: dailyStats.bestStreak },
+                            { label: t('um.played'), value: dailyStats.gamesPlayed },
+                            { label: t('um.winRate'), value: `${dailyWinRate}%` },
+                            { label: t('um.streak'), value: dailyStats.currentStreak },
+                            { label: t('um.bestStreak'), value: dailyStats.bestStreak },
                           ].map(({ label, value }) => (
                             <div key={label} style={{ background: inputBg, border: `1px solid ${divider}`, borderRadius: '4px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                               <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '8px', color: subtext }}>{label}</span>
@@ -771,7 +773,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                   const LockOverlay = ({ req }: { req: number }) => (
                     <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(2px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', zIndex: 2, borderRadius: '4px' }}>
                       <Lock style={{ width: '18px', height: '18px', color: '#f97316' }} />
-                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: '#f97316' }}>UNLOCKS AT LVL {req}</span>
+                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: '#f97316' }}>{t('um.unlocksAt', { req })}</span>
                     </div>
                   );
                   return (
@@ -779,7 +781,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                     {/* Profile Photo */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
-                    <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext, alignSelf: 'flex-start' }}>PROFILE PHOTO</span>
+                    <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext, alignSelf: 'flex-start' }}>{t('um.profilePhoto')}</span>
                     <label
                       htmlFor={localStorage.getItem('owcsle_ugc_ack') ? 'avatar-upload' : undefined}
                       onClick={(e) => {
@@ -813,7 +815,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                     </label>
                     <input ref={fileRef} id="avatar-upload" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
                     <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: avatarState === 'success' ? '#22c55e' : avatarState === 'error' ? '#e53e3e' : subtext }}>
-                      {avatarState === 'success' ? 'PHOTO UPDATED!' : avatarState === 'error' ? 'UPLOAD FAILED' : 'CLICK TO CHANGE PHOTO'}
+                      {avatarState === 'success' ? t('um.photoUpdated') : avatarState === 'error' ? t('um.uploadFailed') : t('um.clickChangePhoto')}
                     </span>
 
                     {/* UGC notice */}
@@ -831,10 +833,10 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                           display: 'flex', flexDirection: 'column', gap: '14px',
                         }}>
                           <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: '#f97316', margin: 0 }}>
-                            CONTENT POLICY
+                            {t('um.contentPolicy')}
                           </p>
                           <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: text, margin: 0, lineHeight: 1.7 }}>
-                            ALL USER GENERATED CONTENT IS MONITORED AND IS ALWAYS SUBJECT TO REMOVAL. BY UPLOADING A PROFILE PHOTO YOU AGREE TO THESE TERMS.
+                            {t('um.ugcNotice')}
                           </p>
                           <button
                             onClick={() => {
@@ -848,7 +850,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                               fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
                             }}
                           >
-                            I ACKNOWLEDGE
+                            {t('um.acknowledge')}
                           </button>
                           <button
                             onClick={() => setShowUgcNotice(false)}
@@ -858,7 +860,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                               fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
                             }}
                           >
-                            CANCEL
+                            {t('um.cancel')}
                           </button>
                         </div>
                       </div>
@@ -870,7 +872,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                     {/* Team Tag */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>TEAM TAG</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.teamTag')}</span>
                         {teamTag && (
                           <button onClick={() => saveTeamTag('')} style={{
                             background: 'none', border: 'none', cursor: 'pointer', padding: 0,
@@ -879,7 +881,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                           }}
                             onMouseEnter={e => (e.currentTarget.style.color = '#e53e3e')}
                             onMouseLeave={e => (e.currentTarget.style.color = subtext)}
-                          >CLEAR</button>
+                          >{t('um.clear')}</button>
                         )}
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -913,7 +915,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                       </div>
                       {teamTagState === 'success' && (
                         <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: '#22c55e' }}>
-                          {teamTag ? `TEAM SET TO ${teamTag.toUpperCase()}` : 'TEAM TAG CLEARED'}
+                          {teamTag ? t('um.teamSet', { team: teamTag.toUpperCase() }) : t('um.teamCleared')}
                         </span>
                       )}
                     </div>
@@ -923,7 +925,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                     {/* Player Title */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>PLAYER TITLE</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.playerTitle')}</span>
                         {titleVal && (
                           <button onClick={() => saveTitle('')} style={{
                             background: 'none', border: 'none', cursor: 'pointer', padding: 0,
@@ -932,7 +934,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                           }}
                             onMouseEnter={e => (e.currentTarget.style.color = '#e53e3e')}
                             onMouseLeave={e => (e.currentTarget.style.color = subtext)}
-                          >CLEAR</button>
+                          >{t('um.clear')}</button>
                         )}
                       </div>
                       <div style={{ position: 'relative' }}>
@@ -992,7 +994,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                     {/* Banner */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>PROFILE BANNER</span>
+                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: subtext }}>{t('um.profileBanner')}</span>
                       <div style={{ position: 'relative' }}>
                       {locked(20) && <LockOverlay req={20} />}
                       <label
@@ -1022,7 +1024,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                       >
                         {bannerPreview
                           ? <img src={bannerPreview} alt="banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          : <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>CLICK TO UPLOAD BANNER</span>
+                          : <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>{t('um.clickUploadBanner')}</span>
                         }
                         <div className="banner-overlay" style={{
                           position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)',
@@ -1038,7 +1040,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                       </div>
                       <input ref={bannerRef} id="banner-upload" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleBannerChange} />
                       <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: bannerState === 'success' ? '#22c55e' : bannerState === 'error' ? '#e53e3e' : subtext }}>
-                        {bannerState === 'success' ? 'BANNER UPDATED!' : bannerState === 'error' ? 'UPLOAD FAILED' : 'RECOMMENDED: 1500 × 500'}
+                        {bannerState === 'success' ? t('um.bannerUpdated') : bannerState === 'error' ? t('um.uploadFailed') : t('um.bannerRecommended')}
                       </span>
                     </div>
 
@@ -1052,7 +1054,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                     {/* Username */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>USERNAME</span>
+                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>{t('um.username')}</span>
                       {editingUsername ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ display: 'flex', gap: '6px' }}>
@@ -1063,7 +1065,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                             <button onClick={saveUsername} disabled={usernameState === 'loading'} style={{
                               padding: '8px 12px', background: '#f97316', color: '#fff', border: 'none',
                               borderRadius: '3px', cursor: 'pointer', fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
-                            }}>{usernameState === 'loading' ? '...' : 'SAVE'}</button>
+                            }}>{usernameState === 'loading' ? '...' : t('um.save')}</button>
                             <button onClick={() => { setEditingUsername(false); setUsernameVal(username); setUsernameMsg('') }} style={iconBtnStyle}>
                               <X style={{ width: '15px', height: '15px' }} />
                             </button>
@@ -1085,7 +1087,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
 
                     {/* Email */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>EMAIL</span>
+                      <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>{t('um.email')}</span>
                       {editingEmail ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ display: 'flex', gap: '6px' }}>
@@ -1096,7 +1098,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                             <button onClick={saveEmail} disabled={emailState === 'loading'} style={{
                               padding: '8px 12px', background: '#f97316', color: '#fff', border: 'none',
                               borderRadius: '3px', cursor: 'pointer', fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
-                            }}>{emailState === 'loading' ? '...' : 'SAVE'}</button>
+                            }}>{emailState === 'loading' ? '...' : t('um.save')}</button>
                             <button onClick={() => { setEditingEmail(false); setEmailVal(user.email || ''); setEmailMsg('') }} style={iconBtnStyle}>
                               <X style={{ width: '15px', height: '15px' }} />
                             </button>
@@ -1115,7 +1117,7 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                               <span style={{
                                 position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: '#f97316',
-                              }}>CLICK TO REVEAL</span>
+                              }}>{t('um.clickReveal')}</span>
                             )}
                           </div>
                           {emailState === 'success' && <Check style={{ width: '13px', height: '13px', color: '#22c55e' }} />}
@@ -1141,28 +1143,28 @@ export function UserMenu({ user, onLoginClick }: UserMenuProps) {
                         onMouseLeave={e => (e.currentTarget.style.borderColor = inputBorder)}
                       >
                         <KeyRound style={{ width: '13px', height: '13px' }} />
-                        CHANGE PASSWORD
+                        {t('um.changePassword')}
                       </button>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>CHANGE PASSWORD</span>
+                        <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: subtext }}>{t('um.changePassword')}</span>
                         <input className="profile-input" type="password" autoComplete="new-password" value={pwVal}
-                          onChange={e => setPwVal(e.target.value)} placeholder="New password" style={inputStyle} autoFocus />
+                          onChange={e => setPwVal(e.target.value)} placeholder={t('um.newPassword')} style={inputStyle} autoFocus />
                         <input className="profile-input" type="password" autoComplete="new-password" value={pwConfirmVal}
-                          onChange={e => setPwConfirmVal(e.target.value)} placeholder="Confirm new password"
+                          onChange={e => setPwConfirmVal(e.target.value)} placeholder={t('um.confirmNewPassword')}
                           style={{ ...inputStyle, borderColor: pwConfirmVal.length > 0 ? (pwVal === pwConfirmVal ? 'rgba(249,115,22,0.5)' : 'rgba(229,62,62,0.6)') : inputBorder }} />
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button onClick={() => { setShowPassword(false); setPwVal(''); setPwConfirmVal(''); setPwMsg(''); setPwState('idle') }} style={{
                             padding: '8px 12px', background: 'none', color: subtext,
                             border: `1px solid ${inputBorder}`, borderRadius: '3px', cursor: 'pointer',
                             fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
-                          }}>CANCEL</button>
+                          }}>{t('um.cancel')}</button>
                           <button onClick={savePassword} disabled={pwState === 'loading'} style={{
                             padding: '8px 14px', background: '#f97316', color: '#fff',
                             border: 'none', borderRadius: '3px', cursor: 'pointer',
                             fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px',
                             opacity: pwState === 'loading' ? 0.6 : 1,
-                          }}>{pwState === 'loading' ? '...' : 'SAVE'}</button>
+                          }}>{pwState === 'loading' ? '...' : t('um.save')}</button>
                         </div>
                         {pwMsg && <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: pwState === 'error' ? '#e53e3e' : '#22c55e', margin: 0 }}>{pwMsg.toUpperCase()}</p>}
                       </div>

@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
 import { BarChart3 } from 'lucide-react';
 import { GameStats } from '@/hooks/useStats';
+import { useT } from './LanguageProvider';
 
 interface StatsModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface StatsModalProps {
 }
 
 export function StatsModal({ isOpen, onClose, stats, winRate }: StatsModalProps) {
+  const t = useT();
   const { resolvedTheme } = useTheme();
   const dark = resolvedTheme === 'dark';
   const [mounted, setMounted] = useState(false);
@@ -76,7 +78,7 @@ export function StatsModal({ isOpen, onClose, stats, winRate }: StatsModalProps)
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <BarChart3 style={{ width: '14px', height: '14px', color: '#f97316' }} />
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#f97316', letterSpacing: '0.05em' }}>
-              STATISTICS
+              {t('stats.title')}
             </span>
           </div>
           <button onClick={handleClose} style={{
@@ -95,10 +97,10 @@ export function StatsModal({ isOpen, onClose, stats, winRate }: StatsModalProps)
           {/* Stats grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
             {[
-              { value: stats.gamesPlayed, label: 'GAMES PLAYED' },
-              { value: `${winRate}%`, label: 'WIN RATE' },
-              { value: stats.currentStreak, label: 'CURRENT STREAK' },
-              { value: stats.bestStreak, label: 'BEST STREAK' },
+              { value: stats.gamesPlayed, label: t('stats.gamesPlayed') },
+              { value: `${winRate}%`, label: t('stats.winRate') },
+              { value: stats.currentStreak, label: t('stats.currentStreak') },
+              { value: stats.bestStreak, label: t('stats.bestStreak') },
             ].map(({ value, label }) => (
               <div key={label} style={{ padding: '12px 8px', textAlign: 'center' }}>
                 <div style={{ fontFamily: "var(--font-poster-gothic), sans-serif", fontSize: '28px', fontWeight: 700, color: text, lineHeight: 1 }}>
@@ -117,7 +119,7 @@ export function StatsModal({ isOpen, onClose, stats, winRate }: StatsModalProps)
           {/* Guess distribution */}
           <div>
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: text, letterSpacing: '0.05em' }}>
-              GUESS DISTRIBUTION
+              {t('stats.distribution')}
             </span>
             <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {stats.guessDistribution.map((count, i) => {

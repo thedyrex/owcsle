@@ -3,8 +3,10 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState, useCallback } from "react";
 import { Sun, Moon, Monitor } from "lucide-react";
+import { useT } from "./LanguageProvider";
 
 export function ThemeToggle() {
+  const t = useT();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -82,7 +84,7 @@ export function ThemeToggle() {
         {getIcon()}
       </button>
       <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-neutral-900 dark:bg-neutral-700 text-white text-xs rounded whitespace-nowrap transition-opacity pointer-events-none z-[200] font-[family-name:var(--font-ow-esports)] ${showTooltip && !isOpen ? 'opacity-100' : 'opacity-0'}`}>
-        Theme
+        {t('settings.theme')}
       </div>
 
       {isOpen && (
@@ -94,7 +96,7 @@ export function ThemeToggle() {
             }`}
           >
             <Sun className={`w-4 h-4 transition-transform ${theme !== "light" ? "group-hover:scale-110" : ""}`} />
-            <span className="font-[family-name:var(--font-ow-esports)]">Light</span>
+            <span className="font-[family-name:var(--font-ow-esports)]">{t('settings.theme.light')}</span>
           </button>
           <button
             onClick={() => handleThemeSwitch("dark")}
@@ -103,7 +105,7 @@ export function ThemeToggle() {
             }`}
           >
             <Moon className={`w-4 h-4 transition-transform ${theme !== "dark" ? "group-hover:scale-110" : ""}`} />
-            <span className="font-[family-name:var(--font-ow-esports)]">Dark</span>
+            <span className="font-[family-name:var(--font-ow-esports)]">{t('settings.theme.dark')}</span>
           </button>
           <button
             onClick={() => handleThemeSwitch("system")}
@@ -112,7 +114,7 @@ export function ThemeToggle() {
             }`}
           >
             <Monitor className={`w-4 h-4 transition-transform ${theme !== "system" ? "group-hover:scale-110" : ""}`} />
-            <span className="font-[family-name:var(--font-ow-esports)]">System</span>
+            <span className="font-[family-name:var(--font-ow-esports)]">{t('settings.theme.system')}</span>
           </button>
         </div>
       )}

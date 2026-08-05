@@ -5,6 +5,8 @@ import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import { Settings, Sun, Moon, Monitor } from 'lucide-react';
 import { ColorblindMode } from '@/hooks/useSettings';
+import { useT, useLang } from './LanguageProvider';
+import { LANGS } from '@/app/i18n/translations';
 
 interface Props {
   open: boolean;
@@ -18,6 +20,8 @@ interface Props {
 
 export function SettingsModal({ open, onClose, colorblindMode, onColorblindChange, reduceMotion, onReduceMotionChange }: Props) {
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const t = useT();
+  const { lang, setLang } = useLang();
   const dark = resolvedTheme === 'dark';
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -51,6 +55,8 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
         @keyframes stBackdropOut { from { opacity:1; } to { opacity:0; } }
         @keyframes stPanelIn  { from { opacity:0; transform:translate(-50%,calc(-50% + 20px)); } to { opacity:1; transform:translate(-50%,-50%); } }
         @keyframes stPanelOut { from { opacity:1; transform:translate(-50%,-50%); } to { opacity:0; transform:translate(-50%,calc(-50% + 12px)); } }
+        .st-theme-row { display: flex; }
+        @media (min-width: 640px) { .st-theme-row { display: none; } }
       `}</style>
 
       <div onClick={handleClose} style={{
@@ -81,7 +87,7 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Settings style={{ width: '14px', height: '14px', color: '#f97316' }} />
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#f97316', letterSpacing: '0.05em' }}>
-              SETTINGS
+              {t('settings.title')}
             </span>
           </div>
           <button onClick={handleClose} style={{
@@ -97,13 +103,13 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
         {/* Body */}
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
 
-          {/* Theme row */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          {/* Theme row — mobile only (desktop uses the top-bar ThemeToggle) */}
+          <div className="st-theme-row" style={{
+            alignItems: 'center', justifyContent: 'space-between',
             padding: '12px 16px', background: rowBg, borderRadius: '4px',
             border: `1px solid ${divider}`,
           }}>
-            <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>THEME</div>
+            <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>{t('settings.theme')}</div>
             <div style={{ display: 'flex', gap: '4px', background: dark ? '#0d0d0d' : '#dcdcdc', padding: '3px', borderRadius: '6px' }}>
               {[
                 { key: 'light', Icon: Sun },
@@ -112,7 +118,7 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
               ].map(({ key, Icon }) => (
                 <button
                   key={key}
-                  aria-label={key}
+                  aria-label={t(`settings.theme.${key}`)}
                   onClick={() => switchTheme(key)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -128,6 +134,34 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
             </div>
           </div>
 
+          {/* Language row */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px', background: rowBg, borderRadius: '4px',
+            border: `1px solid ${divider}`,
+          }}>
+            <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>{t('settings.language')}</div>
+            <div style={{ display: 'flex', gap: '4px', background: dark ? '#0d0d0d' : '#dcdcdc', padding: '3px', borderRadius: '6px' }}>
+              {LANGS.map(({ code, label }) => (
+                <button
+                  key={code}
+                  aria-label={label}
+                  onClick={() => setLang(code)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    minWidth: '40px', height: '26px', padding: '0 10px', borderRadius: '4px', border: 'none', cursor: 'pointer',
+                    fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px',
+                    background: lang === code ? '#f97316' : 'transparent',
+                    color: lang === code ? '#fff' : subtext,
+                    transition: 'background 0.15s, color 0.15s',
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Toggle row */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -135,9 +169,9 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
             border: `1px solid ${divider}`,
           }}>
             <div>
-              <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>COLORBLIND MODE</div>
+              <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>{t('settings.colorblind')}</div>
               <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext, marginTop: '3px' }}>
-                {colorblindMode !== 'none' ? 'ENABLED' : 'DISABLED'}
+                {colorblindMode !== 'none' ? t('settings.enabled') : t('settings.disabled')}
               </div>
             </div>
             <button
@@ -164,9 +198,9 @@ export function SettingsModal({ open, onClose, colorblindMode, onColorblindChang
             border: `1px solid ${divider}`,
           }}>
             <div>
-              <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>REDUCE MOTION</div>
+              <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: text }}>{t('settings.reduceMotion')}</div>
               <div style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '9px', color: subtext, marginTop: '3px' }}>
-                {reduceMotion ? 'ANIMATIONS DISABLED' : 'ANIMATIONS ENABLED'}
+                {reduceMotion ? t('settings.animOff') : t('settings.animOn')}
               </div>
             </div>
             <button

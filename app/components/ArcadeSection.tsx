@@ -7,7 +7,9 @@ import { Player } from "@/lib/supabase";
 import { useState, useRef, useEffect } from "react";
 import { xpProgress } from "@/lib/xp";
 import { useSettings } from "@/hooks/useSettings";
+import { useT } from "./LanguageProvider";
 export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { isLoggedIn?: boolean; onLoginClick?: () => void }) {
+  const t = useT();
   const { settings } = useSettings();
   const { guesses, maxGuesses, gameWon, gameOver, isLoading, error, makeGuess, allPlayers, targetPlayer, playAgain, gamesPlayed, gamesWon, streak, totalXp, xpReady, isLoggedIn: isLoggedInHook } = useArcadeGame();
   const isLoggedIn = isLoggedInProp ?? isLoggedInHook;
@@ -154,7 +156,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
           {isLoggedIn && <div className="w-full max-w-[312px] flex flex-col gap-1 relative" style={{ opacity: xpVisible ? 1 : 0, transition: 'opacity 1.2s ease' }}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-[family-name:var(--font-ow-esports)] text-purple-400">
-                LVL {xp.level}
+                {t('um.lvl', { level: xp.level })}
               </span>
               <span className="text-xs font-[family-name:var(--font-ow-esports)] text-neutral-500 dark:text-neutral-400">
                 {xp.current}/{xp.required} XP
@@ -174,21 +176,21 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
             <div className="flex flex-col items-center gap-0.5 w-24 py-2">
               <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                 <Flame className="w-3.5 h-3.5 text-neutral-700 dark:text-white" />
-                <span>STREAK</span>
+                <span>{t('arcade.streak')}</span>
               </div>
               <span className="text-lg font-bold">{streak}</span>
             </div>
             <div className="flex flex-col items-center gap-0.5 w-24 py-2 border-x border-neutral-200 dark:border-neutral-700">
               <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                 <Timer className="w-3.5 h-3.5 text-neutral-700 dark:text-white" />
-                <span>TIME</span>
+                <span>{t('arcade.time')}</span>
               </div>
               <span className="text-lg font-bold tabular-nums">{formatTime(elapsed)}</span>
             </div>
             <div className="flex flex-col items-center gap-0.5 w-24 py-2">
               <div className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                 <Trophy className="w-3.5 h-3.5 text-neutral-700 dark:text-white" />
-                <span>WINS</span>
+                <span>{t('arcade.wins')}</span>
               </div>
               <span className="text-lg font-bold">{gamesWon}/{gamesPlayed}</span>
             </div>
@@ -203,7 +205,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
               <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-6 py-3 rounded-lg flex flex-col items-center gap-1 font-bold font-[family-name:var(--font-ow-esports)]">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5" />
-                  <span>You won in {guesses.length} guesses!</span>
+                  <span>{t('arcade.won', { count: guesses.length })}</span>
                 </div>
               </div>
               <button
@@ -211,7 +213,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
                 className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-bold transition-colors font-[family-name:var(--font-ow-esports)]"
               >
                 <RotateCcw className="w-4 h-4" />
-                PLAY AGAIN
+                {t('arcade.playAgain')}
               </button>
             </div>
           ) : guesses.length >= maxGuesses ? (
@@ -219,10 +221,10 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
               <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-6 py-3 rounded-lg flex flex-col items-center gap-1 font-bold font-[family-name:var(--font-ow-esports)]">
                 <div className="flex items-center gap-2">
                   <XCircle className="w-5 h-5" />
-                  <span>Game Over!</span>
+                  <span>{t('arcade.gameOver')}</span>
                 </div>
                 {targetPlayer && (
-                  <span className="text-sm font-normal">The answer was {targetPlayer.player_name}</span>
+                  <span className="text-sm font-normal">{t('arcade.answerWas', { name: targetPlayer.player_name })}</span>
                 )}
               </div>
               <button
@@ -230,7 +232,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
                 className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-bold transition-colors font-[family-name:var(--font-ow-esports)]"
               >
                 <RotateCcw className="w-4 h-4" />
-                PLAY AGAIN
+                {t('arcade.playAgain')}
               </button>
             </div>
           ) : (
@@ -242,7 +244,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
                     <input
                       ref={inputRef}
                       type="text"
-                      placeholder="TYPE OR SELECT PLAYER..."
+                      placeholder={t('page.inputPlaceholder')}
                       value={inputValue}
                       onChange={(e) => { setInputValue(e.target.value); setShowSuggestions(true); setIsClosing(false); }}
                       onKeyDown={handleKeyDown}
@@ -273,7 +275,7 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
                         ))
                       ) : (
                         <div className="px-3 py-1.5 text-sm text-neutral-500 dark:text-neutral-400 italic select-none">
-                          No players found
+                          {t('page.noPlayers')}
                         </div>
                       )}
                     </div>
@@ -284,13 +286,13 @@ export function ArcadeSection({ isLoggedIn: isLoggedInProp, onLoginClick }: { is
                   disabled={!inputValue.trim() || gameWon || guesses.length >= maxGuesses}
                   className="px-3 py-2 sm:px-5 sm:py-2.5 bg-purple-500 hover:bg-purple-600 text-white text-sm sm:text-base font-bold rounded-lg transition-colors font-[family-name:var(--font-poster-gothic)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  GUESS
+                  {t('page.guess')}
                 </button>
               </div>
               {!isLoggedIn && (
                 <p className="text-center text-xs text-neutral-500 dark:text-neutral-400 mt-1.5 font-[family-name:var(--font-ow-esports)]">
                   <button onClick={onLoginClick} className="underline hover:text-neutral-300 transition-colors cursor-pointer">
-                    SIGN UP TO SAVE STATS
+                    {t('arcade.signUpSave')}
                   </button>
                 </p>
               )}

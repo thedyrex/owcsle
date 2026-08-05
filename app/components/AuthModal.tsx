@@ -3,9 +3,11 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/lib/supabase/client'
 import { useTheme } from 'next-themes'
+import { useT } from './LanguageProvider'
 type Mode = 'login' | 'signup'
 
 function TosModal({ onClose, dark }: { onClose: () => void; dark: boolean }) {
+  const t = useT()
   const bg = dark ? '#111' : '#fff'
   const text = dark ? '#f0f0f0' : '#111'
   const subtext = dark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.6)'
@@ -44,7 +46,7 @@ function TosModal({ onClose, dark }: { onClose: () => void; dark: boolean }) {
           flexShrink: 0,
         }}>
           <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '14px', color: text }}>
-            TERMS OF SERVICE
+            {t('tos.title')}
           </span>
           <button onClick={onClose} style={{
             background: 'none', border: 'none', cursor: 'pointer',
@@ -57,56 +59,19 @@ function TosModal({ onClose, dark }: { onClose: () => void; dark: boolean }) {
         </div>
         {/* Body */}
         <div style={{ overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {[
-            {
-              heading: '1. ACCEPTANCE',
-              body: 'By creating an account or using OWCSLE, you agree to these Terms of Service. If you do not agree, do not use the site.',
-            },
-            {
-              heading: '2. ELIGIBILITY',
-              body: 'You must be at least 13 years old to use OWCSLE. By registering, you confirm that you meet this requirement.',
-            },
-            {
-              heading: '3. ACCOUNTS',
-              body: 'You are responsible for keeping your account credentials secure. You may not share, sell, or transfer your account. We reserve the right to suspend or terminate accounts that violate these terms.',
-            },
-            {
-              heading: '4. USER CONTENT',
-              body: 'Profile pictures and usernames you upload must not contain offensive, hateful, or infringing material. We reserve the right to remove content or ban accounts without notice.',
-            },
-            {
-              heading: '5. GAME DATA & STATS',
-              body: 'XP, streaks, win/loss records, and leaderboard rankings are stored for gameplay purposes only. We do not guarantee the accuracy or permanence of this data.',
-            },
-            {
-              heading: '6. FAN PROJECT DISCLAIMER',
-              body: 'OWCSLE is an unofficial fan project and is not affiliated with, endorsed by, or sponsored by Blizzard Entertainment or the Overwatch Champion Series. All Overwatch-related trademarks and intellectual property belong to their respective owners.',
-            },
-            {
-              heading: '7. NO WARRANTIES',
-              body: 'OWCSLE is provided "as is" without warranties of any kind. We are not liable for downtime, data loss, or any damages arising from use of the site.',
-            },
-            {
-              heading: '8. CHANGES',
-              body: 'We may update these terms at any time. Continued use of the site after changes constitutes acceptance of the new terms.',
-            },
-            {
-              heading: '9. CONTACT',
-              body: 'Questions about these terms? Reach out to @dyrexreal on Twitter or use the Feedback option in the settings menu.',
-            },
-          ].map(section => (
-            <div key={section.heading}>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
+            <div key={n}>
               <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: '#f97316', margin: '0 0 6px' }}>
-                {section.heading}
+                {t(`tos.${n}.h`)}
               </p>
               <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: subtext, margin: 0, lineHeight: '1.7' }}>
-                {section.body}
+                {t(`tos.${n}.b`)}
               </p>
             </div>
           ))}
           <div style={{ height: '1px', background: divider }} />
           <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.25)', margin: 0 }}>
-            LAST UPDATED: APRIL 2026
+            {t('tos.lastUpdated')}
           </p>
         </div>
       </div>
@@ -127,6 +92,7 @@ function getStrength(pw: string): { score: number; label: string; color: string 
   return { score, label: 'STRONG', color: '#22c55e' }
 }
 export function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const t = useT()
   const { resolvedTheme } = useTheme()
   const dark = resolvedTheme === 'dark'
   const [mode, setMode] = useState<Mode>('login')
@@ -172,7 +138,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
   const passwordsMatch = confirm === password
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (mode === 'signup' && !passwordsMatch) { setError('Passwords do not match.'); return }
+    if (mode === 'signup' && !passwordsMatch) { setError(t('auth.err.passwordMismatch')); return }
     setLoading(true)
     setError(null)
     setSuccess(null)
@@ -180,7 +146,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
       let loginEmail = email
       if (!email.includes('@')) {
         const res = await fetch(`/api/auth/lookup-email?username=${encodeURIComponent(email)}`)
-        if (!res.ok) { setError('No account found with that username.'); setLoading(false); return }
+        if (!res.ok) { setError(t('auth.err.noAccount')); setLoading(false); return }
         const data = await res.json()
         loginEmail = data.email
       }
@@ -195,7 +161,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
           outer.style.transition = 'none'
           outer.style.height = inner.offsetHeight + 'px'
         }
-        setSuccess('Check your email to confirm your account.')
+        setSuccess(t('auth.checkEmail'))
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             if (outer && inner) {
@@ -274,7 +240,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
                 background: 'none', border: 'none', cursor: 'pointer', padding: 0,
                 transition: 'color 0.15s',
               }}>
-                {m === 'login' ? 'LOGIN' : 'SIGN UP'}
+                {m === 'login' ? t('auth.login') : t('auth.signup')}
               </button>
             ))}
           </div>
@@ -293,18 +259,18 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             {success ? (
               <div style={{ padding: '40px 28px', textAlign: 'center' }}>
                 <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '12px', color: '#f97316', margin: 0 }}>
-                  CHECK YOUR EMAIL TO CONFIRM YOUR ACCOUNT.
+                  {t('auth.checkEmail')}
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ padding: '24px 28px 28px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {mode === 'signup' && (
-                  <input className="auth-input" type="text" placeholder="USERNAME" value={username}
+                  <input className="auth-input" type="text" placeholder={t('auth.usernamePlaceholder')} value={username}
                     onChange={e => setUsername(e.target.value)} required style={inputStyle} />
                 )}
-                <input className="auth-input" type="text" placeholder={mode === 'login' ? 'EMAIL OR USERNAME' : 'EMAIL'} value={email}
+                <input className="auth-input" type="text" placeholder={mode === 'login' ? t('auth.emailOrUsername') : t('auth.email')} value={email}
                   onChange={e => setEmail(e.target.value)} required style={inputStyle} />
-                <input className="auth-input" type="password" placeholder="PASSWORD" value={password}
+                <input className="auth-input" type="password" placeholder={t('auth.password')} value={password}
                   onChange={e => setPassword(e.target.value)} required style={inputStyle} />
                 {mode === 'signup' && password.length > 0 && (
                   <div>
@@ -318,13 +284,13 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
                       ))}
                     </div>
                     <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: strength.color }}>
-                      {strength.label}
+                      {t(`auth.strength.${strength.label.toLowerCase()}`)}
                     </span>
                   </div>
                 )}
                 {mode === 'signup' && (
                   <>
-                    <input className="auth-input" type="password" placeholder="CONFIRM PASSWORD" value={confirm}
+                    <input className="auth-input" type="password" placeholder={t('auth.confirmPassword')} value={confirm}
                       onChange={e => setConfirm(e.target.value)} required style={{
                         ...inputStyle,
                         borderColor: confirm.length > 0 ? (passwordsMatch ? 'rgba(249,115,22,0.6)' : 'rgba(229,62,62,0.6)') : inputBorder,
@@ -334,12 +300,12 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
                         onChange={e => setAgreedToTos(e.target.checked)}
                         style={{ marginTop: '2px', accentColor: '#f97316', flexShrink: 0, width: '14px', height: '14px', cursor: 'pointer' }} />
                       <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '11px', color: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.5)', lineHeight: '1.5' }}>
-                        I HAVE READ AND AGREE TO THE{' '}
+                        {t('auth.agreeTos')}{' '}
                         <button type="button" onClick={() => setShowTos(true)} style={{
                           background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                           fontFamily: "var(--font-ow-esports), sans-serif",
                           fontSize: '11px', color: '#f97316', textDecoration: 'underline',
-                        }}>TERMS OF SERVICE</button>
+                        }}>{t('auth.tos')}</button>
                       </span>
                     </label>
                   </>
@@ -359,7 +325,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
                   cursor: loading ? 'not-allowed' : 'pointer',
                   transition: 'background 0.15s, color 0.15s',
                 }}>
-                  {loading ? '...' : mode === 'login' ? 'LOGIN' : 'CREATE ACCOUNT'}
+                  {loading ? '...' : mode === 'login' ? t('auth.login') : t('auth.createAccount')}
                 </button>
               </form>
             )}

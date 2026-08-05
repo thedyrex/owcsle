@@ -15,6 +15,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
+import { useT } from "./LanguageProvider";
 
 interface MobileMenuProps {
   isArcade: boolean;
@@ -41,6 +42,7 @@ export function MobileMenu({
   onSettings,
   onLoginClick,
 }: MobileMenuProps) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -97,7 +99,7 @@ export function MobileMenu({
   return (
     <div className="mobile-menu relative flex sm:hidden z-[110]">
       <button
-        aria-label="Menu"
+        aria-label={t('nav.menu')}
         onClick={() => (open ? close() : setOpen(true))}
         className="p-2 rounded-lg text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 shadow-md border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
       >
@@ -119,12 +121,12 @@ export function MobileMenu({
             isClosing ? "animate-dropdown-close" : "animate-dropdown"
           }`}
         >
-          <Row icon={HelpCircle} label="How to play" onClick={onHowToPlay} />
-          {!isArcade && <Row icon={BarChart3} label="Statistics" onClick={onStats} />}
-          {isArcade && <Row icon={Crown} label="Leaderboard" onClick={onLeaderboard} />}
+          <Row icon={HelpCircle} label={t('nav.howToPlay')} onClick={onHowToPlay} />
+          {!isArcade && <Row icon={BarChart3} label={t('nav.statistics')} onClick={onStats} />}
+          {isArcade && <Row icon={Crown} label={t('nav.leaderboard')} onClick={onLeaderboard} />}
           <Row
             icon={isArcade ? HomeIcon : InfinityIcon}
-            label={isArcade ? "Daily" : "Unlimited"}
+            label={isArcade ? t('nav.daily') : t('nav.unlimited')}
             onClick={onToggleArcade}
           />
           <button
@@ -136,20 +138,20 @@ export function MobileMenu({
               alt="USA OWWC"
               className="w-4 h-4 object-contain shrink-0 dark:invert"
             />
-            <span className="font-[family-name:var(--font-ow-esports)] text-sm">USA OWWC</span>
+            <span className="font-[family-name:var(--font-ow-esports)] text-sm">{t('nav.usa')}</span>
           </button>
-          <Row icon={MessageCircle} label="Feedback" onClick={onFeedback} />
+          <Row icon={MessageCircle} label={t('nav.feedback')} onClick={onFeedback} />
 
           <div className="h-px bg-neutral-200 dark:bg-neutral-700 my-1" />
 
-          <Row icon={Settings} label="Settings" onClick={onSettings} />
+          <Row icon={Settings} label={t('nav.settings')} onClick={onSettings} />
 
           <div className="h-px bg-neutral-200 dark:bg-neutral-700 my-1" />
 
           {/* Account — triggers the always-mounted UserMenu (login / profile modal) */}
           <Row
             icon={UserCircle}
-            label={user ? "Profile" : "Log in"}
+            label={user ? t('nav.profile') : t('nav.login')}
             onClick={() => userMenuRef.current?.querySelector("button")?.click()}
           />
         </div>

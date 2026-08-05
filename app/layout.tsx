@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
+import { LanguageProvider } from "./components/LanguageProvider";
+import { translations, LANG_COOKIE, type Lang } from "./i18n/translations";
+
+async function getLang(): Promise<Lang> {
+  const value = (await cookies()).get(LANG_COOKIE)?.value;
+  return value === "zh" ? "zh" : "en";
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,35 +33,42 @@ const owEsports = localFont({
   variable: "--font-ow-esports",
 });
 
-export const metadata: Metadata = {
-  title: "OWCSLE",
-  description: "Guess the Overwatch Champion Series player.",
-  openGraph: {
-    title: "OWCSLE",
-    description: "Guess the Overwatch Champion Series player.",
-    images: [
-      {
-        url: "/owcsletn.png",
-        width: 1920,
-        height: 1080,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "OWCSLE",
-    description: "Guess the Overwatch Champion Series player.",
-    images: ["/owcsletn.png"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getLang();
+  const t = (key: string) => translations[lang][key] ?? translations.en[key] ?? key;
+  const title = t("meta.title");
+  const description = t("meta.description");
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: "/owcsletn.png",
+          width: 1920,
+          height: 1080,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/owcsletn.png"],
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLang();
   return (
-    <html lang="en" suppressHydrationWarning className={undefined}>
+    <html lang={lang} suppressHydrationWarning className={undefined}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -82,9 +97,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${posterGothic.variable} ${owEsports.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <LanguageProvider initialLang={lang}>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

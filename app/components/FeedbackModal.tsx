@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
 import { MessageCircle } from 'lucide-react';
+import { useT } from './LanguageProvider';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface FeedbackModalProps {
 }
 
 export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
+  const t = useT();
   const { resolvedTheme } = useTheme();
   const dark = resolvedTheme === 'dark';
   const [mounted, setMounted] = useState(false);
@@ -110,7 +112,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <MessageCircle style={{ width: '14px', height: '14px', color: '#f97316' }} />
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '13px', color: '#f97316', letterSpacing: '0.05em' }}>
-              FEEDBACK
+              {t('feedback.title')}
             </span>
           </div>
           <button onClick={handleClose} style={{
@@ -126,14 +128,14 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         {/* Body */}
         <form onSubmit={handleSubmit} style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <p style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: '#f97316', letterSpacing: '0.04em', margin: 0 }}>
-            SHARE YOUR THOUGHTS, REPORT BUGS, OR SUGGEST FEATURES!
+            {t('feedback.prompt')}
           </p>
 
           <input
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Your name (optional)"
+            placeholder={t('feedback.namePlaceholder')}
             disabled={isSubmitting}
             className="fb-input"
             style={{
@@ -147,7 +149,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           <textarea
             value={feedback}
             onChange={e => setFeedback(e.target.value)}
-            placeholder="Type your feedback here..."
+            placeholder={t('feedback.textareaPlaceholder')}
             disabled={isSubmitting}
             rows={5}
             className="fb-input"
@@ -161,12 +163,12 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
           {submitStatus === 'error' && (
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: '#ef4444' }}>
-              FAILED TO SEND. PLEASE TRY AGAIN.
+              {t('feedback.failed')}
             </span>
           )}
           {submitStatus === 'success' && (
             <span style={{ fontFamily: "var(--font-ow-esports), sans-serif", fontSize: '10px', color: '#22c55e' }}>
-              THANK YOU FOR YOUR FEEDBACK!
+              {t('feedback.thanks')}
             </span>
           )}
 
@@ -184,7 +186,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             onMouseEnter={e => { if (feedback.trim() && !isSubmitting) e.currentTarget.style.filter = 'brightness(1.1)'; }}
             onMouseLeave={e => { e.currentTarget.style.filter = 'none'; }}
           >
-            {isSubmitting ? 'SENDING...' : 'SEND FEEDBACK'}
+            {isSubmitting ? t('feedback.sending') : t('feedback.send')}
           </button>
 
           <div style={{ paddingBottom: '4px' }} />

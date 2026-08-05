@@ -2,6 +2,7 @@
 
 import { GuessResult } from '@/lib/supabase';
 import { useState, useEffect } from 'react';
+import { useT } from './LanguageProvider';
 
 interface GameBoardProps {
   guesses: GuessResult[];
@@ -11,6 +12,7 @@ interface GameBoardProps {
 }
 
 export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode }: GameBoardProps) {
+  const t = useT();
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   useEffect(() => {
@@ -36,22 +38,16 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
   };
 
   const getStatusText = (status: 'correct' | 'partial' | 'wrong') => {
-    if (status === 'correct') return 'CORRECT';
-    if (status === 'partial') return 'PARTIAL';
-    return 'INCORRECT';
+    if (status === 'correct') return t('board.status.correct');
+    if (status === 'partial') return t('board.status.partial');
+    return t('board.status.incorrect');
   };
 
   const getFullRoleType = (roleType: string | null | undefined) => {
     if (!roleType) return '';
-    const mapping: Record<string, string> = {
-      'MT': 'MAIN TANK',
-      'FT': 'FLEX TANK',
-      'FDPS': 'FLEX DPS',
-      'HS': 'HITSCAN',
-      'MS': 'MAIN SUPPORT',
-      'FS': 'FLEX SUPPORT'
-    };
-    return mapping[roleType.toUpperCase()] || roleType;
+    const key = `board.role.${roleType.toUpperCase()}`;
+    const translated = t(key);
+    return translated === key ? roleType : translated;
   };
 
   return (
@@ -95,7 +91,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full left-0 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-player` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${guess.player.id === targetPlayerId ? (colorblindMode && colorblindMode !== 'none' ? 'bg-blue-500' : 'bg-green-400') : (colorblindMode && colorblindMode !== 'none' ? 'bg-orange-500' : 'bg-red-400')}`}>
-                      {guess.player.id === targetPlayerId ? 'CORRECT' : 'INCORRECT'} PLAYER ({guess.player.player_name})
+                      {t('board.tt.player', { status: guess.player.id === targetPlayerId ? t('board.status.correct') : t('board.status.incorrect'), value: guess.player.player_name })}
                     </div>
                   </>
                 ) : null}
@@ -119,7 +115,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-region` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${getColorClass(guess.feedback.region)}`}>
-                      {getStatusText(guess.feedback.region)} REGION ({guess.player.region})
+                      {t('board.tt.region', { status: getStatusText(guess.feedback.region), value: guess.player.region })}
                     </div>
                   </>
                 ) : null}
@@ -148,7 +144,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-nationality` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${getColorClass(guess.feedback.nationality)}`}>
-                      {getStatusText(guess.feedback.nationality)} NATIONALITY ({guess.player.nationality})
+                      {t('board.tt.nationality', { status: getStatusText(guess.feedback.nationality), value: guess.player.nationality })}
                     </div>
                   </>
                 ) : null}
@@ -177,7 +173,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-role` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${getColorClass(guess.feedback.role)}`}>
-                      {getStatusText(guess.feedback.role)} ROLE ({guess.player.role})
+                      {t('board.tt.role', { status: getStatusText(guess.feedback.role), value: guess.player.role })}
                     </div>
                   </>
                 ) : null}
@@ -201,7 +197,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-roletype` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${getColorClass(guess.feedback.role_type)}`}>
-                      {getStatusText(guess.feedback.role_type)} SUB ROLE ({getFullRoleType(guess.player.role_type)})
+                      {t('board.tt.subRole', { status: getStatusText(guess.feedback.role_type), value: getFullRoleType(guess.player.role_type) })}
                     </div>
                   </>
                 ) : null}
@@ -237,7 +233,7 @@ export function GameBoard({ guesses, maxGuesses, targetPlayerId, colorblindMode 
                     <div className={`absolute bottom-full right-0 mb-2 px-2 py-1 text-white text-xs rounded text-center max-w-36 sm:max-w-none sm:whitespace-nowrap transition-opacity pointer-events-none z-[60] font-[family-name:var(--font-poster-gothic)] shadow-lg ${
                       activeTooltip === `${rowIndex}-team` ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     } ${getColorClass(guess.feedback.team)}`}>
-                      {getStatusText(guess.feedback.team)} TEAM ({guess.player.team_name})
+                      {t('board.tt.team', { status: getStatusText(guess.feedback.team), value: guess.player.team_name })}
                     </div>
                   </>
                 ) : null}
