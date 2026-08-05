@@ -264,11 +264,9 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
             <span className="text-orange-500">OWCS</span>LE
           </h1>
         </div>
-        {isArcade && (
-          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
-            {t('page.subtitle.unlimited')}
-          </p>
-        )}
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
+          {isArcade ? t('page.subtitle.unlimited') : t('page.subtitle.stage')}
+        </p>
         {dailyCount !== null && !isArcade && (
           <p className="text-xs text-neutral-400 dark:text-neutral-500 font-[family-name:var(--font-poster-gothic)] mt-0.5">
             {t('page.gamesPlayedToday', { count: dailyCount })}

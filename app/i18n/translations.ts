@@ -22,6 +22,7 @@ const en: Dict = {
   'meta.description': 'Guess the Overwatch Champion Series player.',
 
   // Main game page
+  'page.subtitle.stage': 'STAGE 2',
   'page.subtitle.unlimited': 'UNLIMITED',
   'page.partneredWith': 'PARTNERED WITH',
   'page.gamesPlayedToday': '{count} GAMES PLAYED TODAY',
@@ -243,6 +244,7 @@ const zh: Dict = {
   'meta.description': '猜守望先锋冠军系列赛选手。',
 
   // Main game page
+  'page.subtitle.stage': '第二阶段',
   'page.subtitle.unlimited': '无尽模式',
   'page.partneredWith': '合作伙伴',
   'page.gamesPlayedToday': '今日游玩次数 {count}',
@@ -464,6 +466,7 @@ const ko: Dict = {
   'meta.description': '옵챔스 선수를 맞춰보세요!',
 
   // Main game page
+  'page.subtitle.stage': '스테이지 2',
   'page.subtitle.unlimited': '무한 모드',
   'page.partneredWith': '파트너십',
   'page.gamesPlayedToday': '오늘 플레이한 게임 수 {count}',
