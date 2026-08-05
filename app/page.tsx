@@ -261,22 +261,14 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
         )}
         <div>
           <h1 className="text-4xl sm:text-3xl md:text-4xl lg:text-4xl font-bold font-[family-name:var(--font-poster-gothic)]">
-            <span
-              style={{
-                backgroundImage: 'linear-gradient(to bottom, #37D4C5 0%, #6FDC9A 50%, #BEE23F 100%)',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-              }}
-            >
-              OWCS
-            </span>
-            LE
+            <span className="text-orange-500">OWCS</span>LE
           </h1>
         </div>
-        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
-          {isArcade ? t('page.subtitle.unlimited') : t('page.subtitle.midseason')}
-        </p>
+        {isArcade && (
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] -mt-1">
+            {t('page.subtitle.unlimited')}
+          </p>
+        )}
         {dailyCount !== null && !isArcade && (
           <p className="text-xs text-neutral-400 dark:text-neutral-500 font-[family-name:var(--font-poster-gothic)] mt-0.5">
             {t('page.gamesPlayedToday', { count: dailyCount })}
@@ -433,8 +425,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
                 <button
                   onClick={handleGuess}
                   disabled={!inputValue.trim() || gameWon || guesses.length >= maxGuesses}
-                  style={{ backgroundImage: 'linear-gradient(to bottom, #37D4C5 0%, #6FDC9A 50%, #BEE23F 100%)' }}
-                  className="px-3 py-2 sm:px-5 sm:py-2.5 text-white text-sm sm:text-base font-bold rounded-lg transition-[filter] hover:brightness-95 font-[family-name:var(--font-poster-gothic)] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-2 sm:px-5 sm:py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base font-bold rounded-lg transition-colors font-[family-name:var(--font-poster-gothic)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {t('page.guess')}
                 </button>
