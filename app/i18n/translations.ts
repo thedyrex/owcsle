@@ -4,13 +4,14 @@
 // a locale, t() falls back to English, then to the raw key — so partial coverage
 // degrades gracefully.
 
-export type Lang = 'en' | 'zh';
+export type Lang = 'en' | 'zh' | 'ko';
 
 export const LANG_COOKIE = 'owcsle_lang';
 
 export const LANGS: { code: Lang; label: string }[] = [
   { code: 'en', label: 'EN' },
   { code: 'zh', label: '中文' },
+  { code: 'ko', label: '한국어' },
 ];
 
 type Dict = Record<string, string>;
@@ -85,7 +86,8 @@ const en: Dict = {
   'howto.teams': 'Teams',
   'howto.credits.title': 'Credits',
   'howto.credits.pre': 'Huge thanks to ',
-  'howto.credits.post': ' for assisting with miscellaneous work, and Mrala for the CN translation.',
+  'howto.credits.mid': ' for assisting with miscellaneous work, ',
+  'howto.credits.post': ' for KR translations, and Mrala for the CN translations.',
 
   // Settings modal
   'settings.title': 'SETTINGS',
@@ -306,7 +308,8 @@ const zh: Dict = {
   'howto.teams': '队伍',
   'howto.credits.title': '鸣谢',
   'howto.credits.pre': '非常感谢 ',
-  'howto.credits.post': ' 协助完成各项杂务，以及 Mrala 提供的中文翻译。',
+  'howto.credits.mid': ' 协助完成各项杂务，',
+  'howto.credits.post': ' 提供韩文翻译，以及 Mrala 提供中文翻译。',
 
   // Settings modal
   'settings.title': '设置',
@@ -457,4 +460,226 @@ const zh: Dict = {
   'arcade.signUpSave': '注册以保存数据',
 };
 
-export const translations: Record<Lang, Dict> = { en, zh };
+const ko: Dict = {
+  // Metadata / SEO
+  'meta.title': 'OWCSLE',
+  'meta.description': '옵챔스 선수를 맞춰보세요!',
+
+  // Main game page
+  'page.subtitle.midseason': '미드시즌 챔피언십과 함께합니다',
+  'page.subtitle.unlimited': '무한 모드',
+  'page.partneredWith': '파트너십',
+  'page.gamesPlayedToday': '오늘 플레이한 게임 수 {count}',
+  'page.inputPlaceholder': '선수 이름을 입력하시거나 선택하세요',
+  'page.guess': 'GUESS',
+  'page.noPlayers': '선수를 찾을 수 없습니다',
+  'page.won': '축하드립니다! {count}번 만에 맞추셨어요!',
+  'page.resetIn': 'OWCSLE은 {time} 후에 신규 선수로 갱신됩니다',
+  'page.lost': '이런! 정답은 {name}입니다!',
+  'page.madeByPrefix': '만든 이:',
+  'page.madeBySuffix': '',
+
+  // Nav / menu labels
+  'nav.menu': '메뉴',
+  'nav.howToPlay': '플레이하는 법',
+  'nav.statistics': '통계',
+  'nav.leaderboard': '리더보드',
+  'nav.unlimited': '무한 모드',
+  'nav.daily': '일일 모드',
+  'nav.usa': '미국 국가대표팀',
+  'nav.feedback': '피드백',
+  'nav.settings': '설정',
+  'nav.profile': '프로필',
+  'nav.login': '로그인',
+
+  // Game board tooltips
+  'board.status.correct': '일치',
+  'board.status.partial': '일부 일치',
+  'board.status.incorrect': '불일치',
+  'board.tt.player': '{status} 선수 ({value})',
+  'board.tt.region': '{status} 지역 ({value})',
+  'board.tt.nationality': '{status} 국적 ({value})',
+  'board.tt.role': '{status} 역할군 ({value})',
+  'board.tt.subRole': '{status} 부역할군 ({value})',
+  'board.tt.team': '{status} 팀 ({value})',
+  'board.role.MT': '메인 탱커',
+  'board.role.FT': '서브 탱커',
+  'board.role.FDPS': '서브 딜러',
+  'board.role.HS': '메인 딜러',
+  'board.role.MS': '메인 힐러',
+  'board.role.FS': '서브 힐러',
+
+  // How to play modal
+  'howto.title': '플레이하는 법',
+  'howto.objective': '6번의 추측 안에 오늘의 OWCS 선수를 맞추세요. 매 추측마다 선수에 대한 정보를 얻을 수 있어요.',
+  'howto.readingGuess': '추측 결과 해석법',
+  'howto.col.player': '선수',
+  'howto.col.region': '지역',
+  'howto.col.nat': '국적',
+  'howto.col.role': '역할군',
+  'howto.col.subRole': '부역할군',
+  'howto.col.team': '팀',
+  'howto.exampleExplain': '한국인 딜러라고 추측을 했기 때문에, 지역, 국적, 역할군이 초록색으로 뜹니다. 부역할군은 노란색으로, 딜러 역할군 내에서 다른 부역할군이라는 뜻입니다. 팀은 빨간색, 즉 오답입니다. 오늘의 선수는 다른 팀에 있는 한국인 딜러라고 추측할 수 있습니다.',
+  'howto.coloursTitle': '색상의 의미',
+  'howto.match': '정답',
+  'howto.close': '부분 정답',
+  'howto.miss': '오답',
+  'howto.coloursExplain.pre': '오직 ',
+  'howto.coloursExplain.bold': '부역할군',
+  'howto.coloursExplain.post': '만 노란색(부분 정답)이 뜰 수 있습니다. 같은 역할군(탱커/딜러/힐러) 내에서 다른 부역할군이라는 뜻입니다. 그 외의 항목은 부분 정답 없이, 전부 정답 혹은 오답입니다.',
+  'howto.teams': '팀',
+  'howto.credits.title': '크레딧',
+  'howto.credits.pre': '여러 작업을 도와주신 ',
+  'howto.credits.mid': '님, 한국어 번역을 맡아주신 ',
+  'howto.credits.post': '님, 그리고 중국어 번역을 맡아주신 Mrala님께 진심으로 감사드립니다.',
+
+  // Settings modal
+  'settings.title': '설정',
+  'settings.theme': '테마',
+  'settings.language': '언어',
+  'settings.colorblind': '색맹 모드',
+  'settings.enabled': '활성화됨',
+  'settings.disabled': '비활성화됨',
+  'settings.reduceMotion': '화면 움직임 줄이기',
+  'settings.animOff': '애니메이션 비활성화됨',
+  'settings.animOn': '애니메이션 활성화됨',
+  'settings.theme.light': '라이트 모드',
+  'settings.theme.dark': '다크 모드',
+  'settings.theme.system': '시스템',
+
+  // Statistics modal
+  'stats.title': '통계',
+  'stats.gamesPlayed': '플레이한 게임 수',
+  'stats.winRate': '승률',
+  'stats.currentStreak': '연승 횟수',
+  'stats.bestStreak': '연승 최고기록',
+  'stats.distribution': '추측 분포',
+
+  // Feedback modal
+  'feedback.title': '피드백',
+  'feedback.prompt': '게임에 대한 의견, 제안, 및 버그 신고를 남겨주세요!',
+  'feedback.namePlaceholder': '이름 (선택)',
+  'feedback.textareaPlaceholder': '피드백을 남겨주세요...',
+  'feedback.failed': '전송 실패. 다시 시도해 주세요.',
+  'feedback.thanks': '피드백 감사합니다!',
+  'feedback.sending': '전송 중...',
+  'feedback.send': '피드백 전송',
+
+  // Leaderboard modal
+  'lb.title': 'OWCSLE 무한 모드 리더보드',
+  'lb.col.player': '선수',
+  'lb.col.level': '레벨',
+  'lb.col.wins': '승수',
+  'lb.col.avgTime': '평균 시간',
+  'lb.loading': '로딩 중...',
+  'lb.empty': '아직 선수가 없습니다. 첫 번째가 되어보세요!',
+  'lb.prev': '← 이전',
+  'lb.next': '다음 →',
+
+  // Auth modal
+  'auth.login': '로그인',
+  'auth.signup': '가입',
+  'auth.usernamePlaceholder': '닉네임',
+  'auth.emailOrUsername': '이메일/닉네임',
+  'auth.email': '이메일',
+  'auth.password': '비밀번호',
+  'auth.confirmPassword': '비밀번호 확인',
+  'auth.strength.weak': '약함',
+  'auth.strength.fair': '보통',
+  'auth.strength.good': '양호',
+  'auth.strength.strong': '강함',
+  'auth.agreeTos': '다음 항목에 동의합니다:',
+  'auth.tos': '서비스 약관',
+  'auth.createAccount': '계정 생성',
+  'auth.checkEmail': '계정 인증을 위해 이메일을 확인해 주세요',
+  'auth.err.passwordMismatch': '비밀번호가 일치하지 않습니다.',
+  'auth.err.noAccount': 'ID로 등록된 계정이 없습니다.',
+
+  // Terms of service
+  'tos.title': '이용 약관',
+  'tos.lastUpdated': '최근 업데이트: 2026년 4월',
+  'tos.1.h': '1. 약관 동의',
+  'tos.1.b': '계정을 생성하거나 OWCSLE를 사용함으로서 본 서비스 약관에 동의합니다. 동의하지 않으신다면 해당 웹사이트를 사용하지 마시길 바랍니다.',
+  'tos.2.h': '2. 이용 자격 요건',
+  'tos.2.b': 'OWCSLE를 이용하기 위해서는 만 13세 이상이어야 합니다. OWCSLE 계정을 생성함으로서 귀하가 이 요건을 충족함으로 간주됩니다.',
+  'tos.3.h': '3. 계정',
+  'tos.3.b': '계정 정보를 안전하게 관리하는 것은 본인의 책임입니다. 계정을 공유, 판매 또는 양도할 수 없습니다. 당사는 이 약관을 위반하는 계정에 대해 정지하거나 종료할 권리를 보유합니다.',
+  'tos.4.h': '4. 유저 컨텐츠',
+  'tos.4.b': '업로드하는 프로필 사진과 사용자 이름에는 불쾌, 혐오스러운 내용이나 저작권을 침해하는 내용이 포함되어서는 안 됩니다. 저희는 사전 통보 없이 콘텐츠를 삭제하거나 계정을 정지할 권리를 보유합니다.',
+  'tos.5.h': '5. 게임 데이터 및 통계',
+  'tos.5.b': 'XP, 연승 기록, 승패 기록, 리더보드 순위는 게임 플레이 목적으로만 저장됩니다. 이 데이터의 정확성이나 영구성을 보장하지 않습니다.',
+  'tos.6.h': '6. 팬 프로젝트 면책 조항',
+  'tos.6.b': 'OWCSLE는 비공식 팬 프로젝트이며, 블리자드 엔터테인먼트나 오버워치 챔피언즈 시리즈로부터 공식 승인이나 후원을 받지 않았습니다. 모든 Overwatch 관련 상표 및 지적 재산권은 각 소유자에게 귀속됩니다.',
+  'tos.7.h': '7. 보증',
+  'tos.7.b': "OWCSLE는 어떠한 종류의 보증도 없이 '있는 그대로' 제공됩니다. 사이트 다운타임, 데이터 손실 또는 기타 손해에 대해 당사는 책임지지 않습니다.",
+  'tos.8.h': '8. 약관 변경',
+  'tos.8.b': '이 조건들은 언제든지 변경될 수 있습니다. 변경 후에도 사이트를 계속 이용하는 것은 새로운 약관에 동의하는 것으로 간주됩니다.',
+  'tos.9.h': '9. 연락',
+  'tos.9.b': '약관에 대해 궁금한 점이 있으신가요? 트위터/X에서 @dyrexreal에게 연락하거나 설정 메뉴의 피드백 옵션을 이용하실 수 있습니다.',
+
+  // User menu / profile
+  'um.profile': '프로필',
+  'um.tab.stats': '통계',
+  'um.tab.customize': '프로필 설정',
+  'um.tab.editInfo': '정보 수정',
+  'um.tab.admin': '관리자',
+  'um.logout': '로그아웃',
+  'um.unlimitedLevel': 'OWCSLE 무한 모드',
+  'um.lvl': '{level} 레벨',
+  'um.totalXp': '총 XP: {xp}',
+  'um.next': '다음 레벨 XP: {xp}',
+  'um.unlimitedStats': '무한 모드 통계',
+  'um.gamesWon': '승리한 게임 수',
+  'um.streak': '연승 기록',
+  'um.bestStreak': '연승 최고 기록',
+  'um.avgTime': '평균 시간',
+  'um.dailyStats': '일일 모드 통계',
+  'um.played': '플레이한 게임 수',
+  'um.winRate': '승률',
+  'um.profilePhoto': '프로필 사진',
+  'um.clickChangePhoto': '클릭해서 사진 변경',
+  'um.photoUpdated': '사진 변경됨!',
+  'um.uploadFailed': '업로드 실패',
+  'um.contentPolicy': '컨텐츠 규정',
+  'um.ugcNotice': '모든 사용자 업로드 콘텐츠는 모니터링되며 언제든지 삭제될 수 있습니다. 프로필 사진을 업로드함으로써 귀하는 이 약관에 동의합니다.',
+  'um.acknowledge': '동의합니다',
+  'um.cancel': '취소',
+  'um.teamTag': '팀 태그',
+  'um.clear': '지우기',
+  'um.teamCleared': '팀 태그가 지워졌습니다',
+  'um.teamSet': '팀이 {team}(으)로 설정되었습니다',
+  'um.playerTitle': '플레이어 칭호',
+  'um.profileBanner': '프로필 배너',
+  'um.clickUploadBanner': '클릭해서 배너 업로드',
+  'um.bannerUpdated': '배너 변경됨!',
+  'um.bannerRecommended': '권장 크기: 1500 × 500',
+  'um.unlocksAt': '{req} 레벨부터 잠금해제',
+  'um.username': '닉네임',
+  'um.email': '이메일',
+  'um.clickReveal': '눌러서 공개',
+  'um.changePassword': '비밀번호 변경',
+  'um.newPassword': '새 비밀번호',
+  'um.confirmNewPassword': '비밀번호 변경 확인',
+  'um.save': '저장',
+  'um.confirmationEmailSent': '인증 이메일이 전송되었습니다.',
+  'um.passwordUpdated': '비밀번호가 변경되었습니다!',
+
+  // Game result / share
+  'result.copy': '결과 복사',
+  'result.copied': '복사됨!',
+  'result.postX': 'X에 포스트하기',
+  'result.shareGot': 'OWCSLE #{n} 성공! {score}',
+  'result.shareMissed': 'OWCSLE #{n} 실패! {score}',
+
+  // Unlimited (arcade) mode
+  'arcade.streak': '연승 기록',
+  'arcade.time': '시간',
+  'arcade.wins': '승수',
+  'arcade.won': '{count}번만에 맞추셨어요!',
+  'arcade.gameOver': '게임 오버!',
+  'arcade.answerWas': '정답은 {name}입니다!',
+  'arcade.playAgain': '다시 플레이하기',
+  'arcade.signUpSave': '통계 저장을 위해 가입하기',
+};
+
+export const translations: Record<Lang, Dict> = { en, zh, ko };

@@ -10,7 +10,7 @@ import { translations, LANG_COOKIE, type Lang } from "./i18n/translations";
 
 async function getLang(): Promise<Lang> {
   const value = (await cookies()).get(LANG_COOKIE)?.value;
-  return value === "zh" ? "zh" : "en";
+  return value === "zh" || value === "ko" ? value : "en";
 }
 
 const geistSans = Geist({

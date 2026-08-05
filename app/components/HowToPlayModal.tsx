@@ -287,6 +287,8 @@ export function HowToPlayModal({ isOpen, onClose }: HowToPlayModalProps) {
             <p style={{ fontFamily: 'var(--font-poster-gothic), sans-serif', fontSize: '13px', color: muted, lineHeight: 1.6, margin: 0 }}>
               {t('howto.credits.pre')}
               <a href="https://x.com/udonmarii" target="_blank" rel="noopener noreferrer" style={{ color: '#f97316', textDecoration: 'none' }}>Mari</a>
+              {t('howto.credits.mid')}
+              <a href="https://x.com/L1meW1z4rd" target="_blank" rel="noopener noreferrer" style={{ color: '#f97316', textDecoration: 'none' }}>Lime</a>
               {t('howto.credits.post')}
             </p>
           </div>

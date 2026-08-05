@@ -14,12 +14,12 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 function isLang(v: string | undefined | null): v is Lang {
-  return v === 'en' || v === 'zh';
+  return v === 'en' || v === 'zh' || v === 'ko';
 }
 
 function readCookieLang(): Lang | null {
   if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/(?:^|;\s*)owcsle_lang=(en|zh)/);
+  const match = document.cookie.match(/(?:^|;\s*)owcsle_lang=(en|zh|ko)/);
   return match ? (match[1] as Lang) : null;
 }
 
