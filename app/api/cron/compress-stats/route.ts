@@ -67,6 +67,33 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: upsertError.message }, { status: 500 });
     }
 
+    // Roll up country counts per day into country_stats, which persists after
+    // the raw rows below are deleted. Rows without a country are skipped.
+    const countryByDate: Record<string, Record<string, number>> = {};
+    for (const result of results) {
+      const country = result.country;
+      if (!country) continue;
+      const date = result.game_date;
+      (countryByDate[date] ??= {})[country] =
+        (countryByDate[date]?.[country] || 0) + 1;
+    }
+
+    const countryRows = Object.entries(countryByDate).flatMap(([date, byCountry]) =>
+      Object.entries(byCountry).map(([country, count]) => ({
+        game_date: date,
+        country,
+        game_count: count,
+      }))
+    );
+
+    if (countryRows.length > 0) {
+      // Non-fatal: if the country_stats table doesn't exist yet (migration not
+      // run), skip the rollup rather than blocking daily_stats compression.
+      await supabase
+        .from("country_stats")
+        .upsert(countryRows, { onConflict: "game_date,country" });
+    }
+
     // Delete compressed rows from game_results
     const { error: deleteError } = await supabase
       .from("game_results")

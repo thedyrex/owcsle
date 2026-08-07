@@ -44,6 +44,13 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Fetch historical per-country rollups (persist past compression). If the
+    // table doesn't exist yet (migration not run), degrade to no country data
+    // rather than failing the whole analytics page.
+    const { data: countryStats } = await supabase
+      .from("country_stats")
+      .select("*");
+
     // Build stats map from compressed daily_stats
     const statsByDate: Record<string, any> = {};
 
@@ -90,7 +97,24 @@ export async function GET() {
     const analyticsArray = Object.values(statsByDate)
       .sort((a: any, b: any) => b.date.localeCompare(a.date));
 
-    return NextResponse.json({ analytics: analyticsArray });
+    // Aggregate country totals: historical rollups + current-day raw rows.
+    const countryTotals: Record<string, number> = {};
+    for (const row of countryStats || []) {
+      if (!row.country) continue;
+      countryTotals[row.country] =
+        (countryTotals[row.country] || 0) + (row.game_count || 0);
+    }
+    for (const result of results || []) {
+      if (!result.country) continue;
+      countryTotals[result.country] =
+        (countryTotals[result.country] || 0) + 1;
+    }
+
+    const countries = Object.entries(countryTotals)
+      .map(([country, games]) => ({ country, games }))
+      .sort((a, b) => b.games - a.games);
+
+    return NextResponse.json({ analytics: analyticsArray, countries });
   } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },

@@ -10,15 +10,27 @@ export async function POST(request: Request) {
   try {
     const { won, guessCount, gameDate } = await request.json();
 
+    // Coarse geolocation from Vercel's edge (ISO alpha-2, e.g. "US"). We store
+    // only the country code — never the IP. Absent in local dev / non-Vercel.
+    const country =
+      request.headers.get("x-vercel-ip-country")?.toUpperCase() || null;
+
     // Insert game result into database
-    const { error } = await supabase
+    const base = {
+      won,
+      guess_count: guessCount,
+      game_date: gameDate,
+      created_at: new Date().toISOString(),
+    };
+    let { error } = await supabase
       .from("game_results")
-      .insert({
-        won,
-        guess_count: guessCount,
-        game_date: gameDate,
-        created_at: new Date().toISOString(),
-      });
+      .insert({ ...base, country });
+
+    // If the country column hasn't been added yet (migration not run), retry
+    // without it so core game recording never breaks on deploy order.
+    if (error && /country/i.test(error.message)) {
+      ({ error } = await supabase.from("game_results").insert(base));
+    }
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

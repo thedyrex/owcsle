@@ -14,6 +14,31 @@ interface DayStat {
   avgGuesses: number | string;
 }
 
+interface CountryStat {
+  country: string;
+  games: number;
+}
+
+const regionNames =
+  typeof Intl !== "undefined" && "DisplayNames" in Intl
+    ? new Intl.DisplayNames(["en"], { type: "region" })
+    : null;
+
+function countryName(code: string): string {
+  try {
+    return regionNames?.of(code) || code;
+  } catch {
+    return code;
+  }
+}
+
+function flagEmoji(code: string): string {
+  if (!/^[A-Za-z]{2}$/.test(code)) return "🏳️";
+  return String.fromCodePoint(
+    ...[...code.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
+  );
+}
+
 type MetricKey = "games" | "wins" | "winrate" | "avg";
 const METRICS: Record<MetricKey, { label: string; color: string; fmt: (v: number) => string; get: (d: DayStat) => number }> = {
   games: { label: "Games", color: ui.orange, fmt: (v) => nf(Math.round(v)), get: (d) => d.totalGames },
@@ -26,6 +51,7 @@ type SortKey = "date" | "games" | "wins" | "winrate" | "avg";
 
 export default function Analytics() {
   const [rows, setRows] = useState<DayStat[]>([]);
+  const [countries, setCountries] = useState<CountryStat[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [metric, setMetric] = useState<MetricKey>("games");
   const [range, setRange] = useState<number>(30);
@@ -34,8 +60,14 @@ export default function Analytics() {
   useEffect(() => {
     fetch("/api/admin/analytics")
       .then((r) => r.json())
-      .then((d) => setRows(d.analytics || []))
-      .catch(() => setRows([]))
+      .then((d) => {
+        setRows(d.analytics || []);
+        setCountries(d.countries || []);
+      })
+      .catch(() => {
+        setRows([]);
+        setCountries([]);
+      })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -60,6 +92,13 @@ export default function Analytics() {
 
   const chartDays = useMemo(() => (range > 0 ? asc.slice(-range) : asc), [asc, range]);
   const cfg = METRICS[metric];
+
+  const countryView = useMemo(() => {
+    const total = countries.reduce((s, c) => s + c.games, 0);
+    const top = countries.slice(0, 12);
+    const max = top.length ? top[0].games : 0;
+    return { total, top, max, distinct: countries.length };
+  }, [countries]);
 
   const sorted = useMemo(() => {
     const get: Record<SortKey, (d: DayStat) => number | string> = {
@@ -139,6 +178,44 @@ export default function Analytics() {
         ) : (
           <div style={{ height: 250, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fontMono, fontSize: 12, color: ui.faint }}>
             {loaded ? "No game data recorded yet" : "Loading…"}
+          </div>
+        )}
+      </Panel>
+
+      {/* country breakdown */}
+      <Panel pad={20} brackets style={{ marginTop: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 18 }}>
+          <SectionLabel accent={ui.cyan}>Where players are from</SectionLabel>
+          <span style={{ fontFamily: fontLabel, fontSize: 10, letterSpacing: "0.1em", color: ui.dim, textTransform: "uppercase" }}>
+            {countryView.distinct} {countryView.distinct === 1 ? "country" : "countries"} · {nf(countryView.total)} located
+          </span>
+        </div>
+        {countryView.top.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+            {countryView.top.map((c) => {
+              const pct = countryView.total ? (c.games / countryView.total) * 100 : 0;
+              const barW = countryView.max ? (c.games / countryView.max) * 100 : 0;
+              return (
+                <div key={c.country} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ width: 168, display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
+                    <span style={{ fontSize: 16, lineHeight: 1 }}>{flagEmoji(c.country)}</span>
+                    <span style={{ fontFamily: fontMono, fontSize: 12.5, color: ui.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {countryName(c.country)}
+                    </span>
+                  </span>
+                  <div style={{ flex: 1, height: 8, background: ui.panel2, borderRadius: 4, overflow: "hidden", minWidth: 40 }}>
+                    <div style={{ width: `${barW}%`, height: "100%", background: ui.cyan, borderRadius: 4, transition: "width 0.3s ease" }} />
+                  </div>
+                  <span style={{ fontFamily: fontMono, fontSize: 12.5, color: ui.dim, minWidth: 96, textAlign: "right" }}>
+                    {nf(c.games)} <span style={{ color: ui.faint }}>({pct.toFixed(1)}%)</span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ height: 90, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: fontMono, fontSize: 12, color: ui.faint }}>
+            {loaded ? "No location data recorded yet" : "Loading…"}
           </div>
         )}
       </Panel>
