@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -8,9 +8,23 @@ import { AuthProvider } from "./components/AuthProvider";
 import { LanguageProvider } from "./components/LanguageProvider";
 import { translations, LANG_COOKIE, type Lang } from "./i18n/translations";
 
+function detectLangFromHeader(acceptLanguage: string | null): Lang {
+  if (!acceptLanguage) return "en";
+  // Take the highest-priority language tag the browser prefers.
+  const primary = acceptLanguage.split(",")[0]?.trim().toLowerCase() ?? "";
+  if (primary.startsWith("zh")) return "zh";
+  if (primary.startsWith("ko")) return "ko";
+  return "en";
+}
+
 async function getLang(): Promise<Lang> {
+  // An explicit choice (cookie) always wins over browser auto-detection.
   const value = (await cookies()).get(LANG_COOKIE)?.value;
-  return value === "zh" || value === "ko" ? value : "en";
+  if (value === "zh" || value === "ko" || value === "en") return value;
+  // No saved preference: fall back to the browser's Accept-Language header,
+  // so Chinese/Korean visitors get their language on first load.
+  const acceptLanguage = (await headers()).get("accept-language");
+  return detectLangFromHeader(acceptLanguage);
 }
 
 const geistSans = Geist({
