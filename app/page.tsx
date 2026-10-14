@@ -7,7 +7,6 @@ import { FeedbackModal } from "./components/FeedbackModal";
 import { HowToPlayModal } from "./components/HowToPlayModal";
 import { GameResultCard } from "./components/GameResultCard";
 import { IconButton } from "./components/IconButton";
-import { ImageIconButton } from "./components/ImageIconButton";
 import { ArcadeSection } from "./components/ArcadeSection";
 import { AuthModal } from "./components/AuthModal";
 import { UserMenu } from "./components/UserMenu";
@@ -60,7 +59,6 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
   const [showAuthModal, setShowAuthModal] = useState(() => searchParams.get('auth') === 'login');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [fadingOut, setFadingOut] = useState(false);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -250,7 +248,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
 
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden flex flex-col items-center justify-start gap-6 bg-gray-100 dark:bg-neutral-950 text-neutral-800 dark:text-white pt-16 pb-8 px-2 animate-fadeIn select-none" style={{ transition: 'opacity 300ms ease-out', opacity: fadingOut ? 0 : 1 }}>
+    <div className="min-h-screen w-full overflow-x-hidden flex flex-col items-center justify-start gap-6 bg-gray-100 dark:bg-neutral-950 text-neutral-800 dark:text-white pt-16 pb-8 px-2 animate-fadeIn select-none">
       <TeamLogoCollage />
       <div className="relative flex flex-col items-center animate-titleFadeIn w-full max-w-lg">
         {showOWTVBanner && (
@@ -290,7 +288,6 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
           onStats={() => setShowStatsModal(true)}
           onLeaderboard={() => setShowLeaderboard(true)}
           onToggleArcade={toggleArcade}
-          onUsa={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }}
           onFeedback={() => setShowFeedbackModal(true)}
           onSettings={() => setShowSettings(true)}
           onLoginClick={() => setShowAuthModal(true)}
@@ -311,7 +308,6 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
           {!isArcade && <IconButton icon={BarChart3} label={t('nav.statistics')} onClick={() => setShowStatsModal(true)} />}
           {isArcade && <IconButton icon={Crown} label={t('nav.leaderboard')} onClick={() => setShowLeaderboard(true)} />}
           <IconButton icon={isArcade ? HomeIcon : InfinityIcon} label={isArcade ? t('nav.daily') : t('nav.unlimited')} onClick={toggleArcade} />
-          <ImageIconButton src="https://cdn.owcsle.xyz/images/usa_logo.png" label={t('nav.usa')} imgClassName="dark:invert" onClick={() => { setFadingOut(true); setTimeout(() => router.push('/usa'), 300); }} />
         </div>
         <div className="hidden sm:flex absolute -top-20 right-0 items-center gap-2 animate-buttonFadeIn z-[100]">
           <IconButton icon={MessageCircle} label={t('nav.feedback')} onClick={() => setShowFeedbackModal(true)} />
