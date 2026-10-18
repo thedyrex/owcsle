@@ -171,7 +171,7 @@ const en: Dict = {
   'tos.8.h': '8. CHANGES',
   'tos.8.b': 'We may update these terms at any time. Continued use of the site after changes constitutes acceptance of the new terms.',
   'tos.9.h': '9. CONTACT',
-  'tos.9.b': 'Questions about these terms? Reach out to @dyrexreal on Twitter or use the Feedback option in the settings menu.',
+  'tos.9.b': 'Questions about these terms? Reach out to @tanner_ow on Twitter or use the Feedback option in the settings menu.',
 
   // User menu / profile
   'um.profile': 'PROFILE',
@@ -393,7 +393,7 @@ const zh: Dict = {
   'tos.8.h': '8. 变更',
   'tos.8.b': '我们可能会随时更新这些条款。在条款变更后继续使用本网站，即视为接受新条款。',
   'tos.9.h': '9. 联系我们',
-  'tos.9.b': '对这些条款有疑问？请在 Twitter 上联系 @dyrexreal，或使用设置菜单中的“反馈”选项。',
+  'tos.9.b': '对这些条款有疑问？请在 Twitter 上联系 @tanner_ow，或使用设置菜单中的“反馈”选项。',
 
   // User menu / profile
   'um.profile': '账户',
@@ -615,7 +615,7 @@ const ko: Dict = {
   'tos.8.h': '8. 약관 변경',
   'tos.8.b': '이 조건들은 언제든지 변경될 수 있습니다. 변경 후에도 사이트를 계속 이용하는 것은 새로운 약관에 동의하는 것으로 간주됩니다.',
   'tos.9.h': '9. 연락',
-  'tos.9.b': '약관에 대해 궁금한 점이 있으신가요? 트위터/X에서 @dyrexreal에게 연락하거나 설정 메뉴의 피드백 옵션을 이용하실 수 있습니다.',
+  'tos.9.b': '약관에 대해 궁금한 점이 있으신가요? 트위터/X에서 @tanner_ow에게 연락하거나 설정 메뉴의 피드백 옵션을 이용하실 수 있습니다.',
 
   // User menu / profile
   'um.profile': '프로필',

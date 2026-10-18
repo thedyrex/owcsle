@@ -434,7 +434,7 @@ export function HomeContent({ showOWTVBanner = false }: { showOWTVBanner?: boole
       {/* Credit */}
       <div className="flex flex-col items-center gap-3 relative z-0 animate-creditFadeIn">
         <p className="text-base text-neutral-500 dark:text-neutral-400 font-[family-name:var(--font-poster-gothic)] flex items-center gap-1">
-          {t('page.madeByPrefix')} <a href="https://x.com/dyrexreal" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">DYREX</a>{t('page.madeBySuffix') ? ` ${t('page.madeBySuffix')}` : ''} <img src="/mewo.png" alt="mewo" className="w-6 h-6 dark:invert" />
+          {t('page.madeByPrefix')} <a href="https://x.com/tanner_ow" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">TANNER</a>{t('page.madeBySuffix') ? ` ${t('page.madeBySuffix')}` : ''} <img src="/mewo.png" alt="mewo" className="w-6 h-6 dark:invert" />
         </p>
       </div>
 
